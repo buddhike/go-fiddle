@@ -9,18 +9,29 @@ import (
 	"os"
 	"regexp"
 
+	"go-fiddle/cmd/proxy/internal/kafkaserver"
+
+	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/elazarl/goproxy"
 )
 
 func main() {
 	proxy := goproxy.NewProxyHttpServer()
+	kafkaProducer := kafkaserver.NewProducer()
 
 	proxy.OnRequest(goproxy.ReqHostMatches(regexp.MustCompile("^.*$"))).
 		HandleConnect(goproxy.AlwaysMitm)
 
 	proxy.OnRequest(shouldInterceptRequest()).DoFunc(
 		func(r *http.Request, ctx *goproxy.ProxyCtx) (*http.Request, *http.Response) {
-			log.Print(r.URL.String())
+			topic := "request"
+			url := r.URL.String()
+			log.Print(url)
+
+			kafkaProducer.Produce(&kafka.Message{
+				TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
+				Value:          []byte(url),
+			}, nil)
 
 			// get stubbed response (a nil response indicates that request should not be stubbed and response should come from actual source)
 			return r, stubResponse(r)
@@ -36,12 +47,19 @@ func main() {
 
 			r.Body = responseStream
 
+			topic := "response"
+
+			kafkaProducer.Produce(&kafka.Message{
+				TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
+				Value:          []byte(s),
+			}, nil)
+
 			return r
 		})
 
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080"
+		port = "8888"
 	}
 	log.Printf("Listening on port %s", port)
 	log.Print(http.ListenAndServe(fmt.Sprintf(":%s", port), proxy))
