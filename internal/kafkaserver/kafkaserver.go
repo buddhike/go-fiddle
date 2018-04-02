@@ -28,8 +28,8 @@ func NewProducer() *kafka.Producer {
 			case *kafka.Message:
 				if ev.TopicPartition.Error != nil {
 					fmt.Printf("Delivery failed: %v\n", ev.TopicPartition)
-				} else {
-					fmt.Printf("Delivered to %v, message: %s\n", ev.TopicPartition, string(ev.Value))
+					// } else {
+					// 	fmt.Printf("Delivered to %v, message: %s\n", ev.TopicPartition, string(ev.Value))
 				}
 			}
 		}

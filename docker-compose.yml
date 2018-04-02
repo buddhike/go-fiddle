@@ -1,17 +1,39 @@
 version: '3'
 services:
+  base:
+    build:
+      context: .
+      dockerfile: base.Dockerfile
+    image: go-fiddle-base
+
   proxy:
     build:
       context: .
+      dockerfile: proxy.Dockerfile
     ports:
       - 8080:8080
     depends_on:
+      - base
       - kafka
-      - zookeeper
     links:
       - kafka
     environment:
       KAFKA_SERVERS: kafka
+
+  api:
+    build:
+      context: .
+      dockerfile: api.Dockerfile
+    ports:
+      - 8000:8000
+    depends_on:
+      - base
+      - kafka
+    links:
+      - kafka
+    environment:
+      KAFKA_SERVERS: kafka
+      PORT: "8000"
 
   zookeeper:
     image: confluentinc/cp-zookeeper:latest

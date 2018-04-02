@@ -9,7 +9,7 @@ import (
 	"os"
 	"regexp"
 
-	"go-fiddle/cmd/proxy/internal/kafkaserver"
+	"go-fiddle/internal/kafkaserver"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/elazarl/goproxy"
@@ -62,7 +62,7 @@ func main() {
 		port = "8888"
 	}
 	log.Printf("Listening on port %s", port)
-	log.Print(http.ListenAndServe(fmt.Sprintf(":%s", port), proxy))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), proxy))
 }
 
 func shouldInterceptRequest() goproxy.ReqConditionFunc {
