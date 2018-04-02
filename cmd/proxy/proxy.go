@@ -1,11 +1,10 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
+	"net/http/httputil"
 	"os"
 	"regexp"
 
@@ -28,9 +27,11 @@ func main() {
 			url := r.URL.String()
 			log.Print(url)
 
+			httpRequest, _ := httputil.DumpRequest(r, true)
+
 			kafkaProducer.Produce(&kafka.Message{
 				TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
-				Value:          []byte(url),
+				Value:          httpRequest,
 			}, nil)
 
 			// get stubbed response (a nil response indicates that request should not be stubbed and response should come from actual source)
@@ -39,19 +40,13 @@ func main() {
 
 	proxy.OnResponse(shouldInterceptResponse()).DoFunc(
 		func(r *http.Response, ctx *goproxy.ProxyCtx) *http.Response {
-			buf, _ := ioutil.ReadAll(r.Body)
-			responseStream := ioutil.NopCloser(bytes.NewBuffer(buf))
-
-			s := string(buf)
-			log.Print(s)
-
-			r.Body = responseStream
+			httpResponse, _ := httputil.DumpResponse(r, true)
 
 			topic := "response"
 
 			kafkaProducer.Produce(&kafka.Message{
 				TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
-				Value:          []byte(s),
+				Value:          httpResponse,
 			}, nil)
 
 			return r

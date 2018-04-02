@@ -16,7 +16,7 @@ func main() {
 	router := mux.NewRouter()
 
 	kafkaClient := kafkaclient.NewConsumer(func(msg *kafka.Message) {
-		fmt.Printf("Message received %v, message: %s\n", msg.TopicPartition, string(msg.Value))
+		log.Printf("Message received %v\n%s\n", msg.TopicPartition, string(msg.Value))
 	})
 
 	port := os.Getenv("PORT")
