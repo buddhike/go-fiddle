@@ -5,18 +5,20 @@ import (
 	"log"
 	"net/http"
 	"net/http/httputil"
-	"os"
 	"regexp"
 
+	"go-fiddle/internal/config"
 	"go-fiddle/internal/kafkaserver"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/elazarl/goproxy"
+	"github.com/satori/go.uuid"
 )
 
 func main() {
 	proxy := goproxy.NewProxyHttpServer()
 	kafkaProducer := kafkaserver.NewProducer()
+	requestMap := make(map[*http.Request]string)
 
 	proxy.OnRequest(goproxy.ReqHostMatches(regexp.MustCompile("^.*$"))).
 		HandleConnect(goproxy.AlwaysMitm)
@@ -29,9 +31,14 @@ func main() {
 
 			httpRequest, _ := httputil.DumpRequest(r, true)
 
+			requestID, _ := uuid.NewV4()
+			requestMap[r] = requestID.String()
+
+			requestIDPrefix := []byte(fmt.Sprintf("request-id: %s\r\n", requestMap[r]))
+
 			kafkaProducer.Produce(&kafka.Message{
 				TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
-				Value:          httpRequest,
+				Value:          append(requestIDPrefix, httpRequest...),
 			}, nil)
 
 			// get stubbed response (a nil response indicates that request should not be stubbed and response should come from actual source)
@@ -44,18 +51,20 @@ func main() {
 
 			topic := "response"
 
+			requestID := requestMap[r.Request]
+			requestIDPrefix := []byte(fmt.Sprintf("request-id: %s\r\n", requestID))
+
+			delete(requestMap, r.Request)
+
 			kafkaProducer.Produce(&kafka.Message{
 				TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
-				Value:          httpResponse,
+				Value:          append(requestIDPrefix, httpResponse...),
 			}, nil)
 
 			return r
 		})
 
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8888"
-	}
+	port := config.Get("PORT", "8080")
 	log.Printf("Listening on port %s", port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), proxy))
 }

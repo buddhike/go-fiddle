@@ -3,17 +3,15 @@ package kafkaserver
 import (
 	"fmt"
 	"log"
-	"os"
+
+	"go-fiddle/internal/config"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 )
 
 // NewProducer returns a new kafka producer
 func NewProducer() *kafka.Producer {
-	kafkaServer := os.Getenv("KAFKA_SERVERS")
-	if kafkaServer == "" {
-		kafkaServer = "localhost:9092"
-	}
+	kafkaServer := config.Get("KAFKA_SERVERS", "localhost:9092")
 
 	log.Printf("Kafka server: %s", kafkaServer)
 	p, err := kafka.NewProducer(&kafka.ConfigMap{"bootstrap.servers": kafkaServer})

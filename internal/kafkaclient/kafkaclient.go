@@ -6,15 +6,14 @@ import (
 	"os/signal"
 	"syscall"
 
+	"go-fiddle/internal/config"
+
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 )
 
 // NewConsumer returns a new kafka producer
 func NewConsumer(messageHandler func(*kafka.Message)) *kafka.Consumer {
-	kafkaServer := os.Getenv("KAFKA_SERVERS")
-	if kafkaServer == "" {
-		kafkaServer = "localhost:9092"
-	}
+	kafkaServer := config.Get("KAFKA_SERVERS", "localhost:9092")
 
 	c, err := kafka.NewConsumer(&kafka.ConfigMap{
 		"bootstrap.servers":        kafkaServer,
