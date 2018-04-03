@@ -2,12 +2,34 @@
 
 Golang implementation of a HTTP proxy inspired by Fiddler.
 
+## Getting started
+
+Dependencies:
+
+* `golang`
+* `kafka`
+* `mongodb`
+
+Alternatively:
+
+* `docker`
+* `docker-compose`
+
+Cloning:
+
+```sh
+# clone into GOPATH
+cd $(go env GOPATH)
+git clone https://github.com/socsieng/go-fiddle.git
+cd go-fiddle
+```
+
 ## Usage
 
-Run the proxy:
+Using `docker-compose`:
 
-```go
-go run cmd/proxy/proxy.go
+```sh
+docker-compose up
 ```
 
 Issue a request:
