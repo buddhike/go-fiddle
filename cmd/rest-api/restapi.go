@@ -12,6 +12,7 @@ import (
 	"go-fiddle/internal/kafkaclient"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )
 
@@ -61,9 +62,13 @@ func main() {
 		log.Printf("Message received %v\n%s\n", msg.TopicPartition, message)
 	})
 
+	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With"})
+	originsOk := handlers.AllowedOrigins([]string{"*"})
+	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
+
 	port := config.Get("PORT", "8888")
 	log.Printf("Listening on port %s", port)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), router))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), handlers.CORS(originsOk, headersOk, methodsOk)(router)))
 
 	kafkaClient.Close()
 }

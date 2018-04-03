@@ -2,6 +2,7 @@ FROM go-fiddle-base
 
 WORKDIR /go/src/go-fiddle
 
+RUN go get -u github.com/gorilla/handlers
 RUN go get -u github.com/gorilla/mux
 RUN go get -u gopkg.in/mgo.v2
 
