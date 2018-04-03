@@ -3,38 +3,41 @@ package main
 import (
 	"strconv"
 	"strings"
+	"time"
 
 	"go-fiddle/internal/regexputil"
 )
 
 // HTTPHeader represents a http header
 type HTTPHeader struct {
-	Name  string
-	Value string
+	Name  string `bson:"name" json:"name"`
+	Value string `bson:"value" json:"value"`
 }
 
 // HTTPRequest represents http request
 type HTTPRequest struct {
-	Method  string
-	URI     string
-	Version string
-	Headers *[]HTTPHeader
-	Body    string
+	Method    string        `bson:"method" json:"method"`
+	URI       string        `bson:"uri" json:"uri"`
+	Version   string        `bson:"version" json:"version"`
+	Timestamp *time.Time    `bson:"timestamp" json:"timestamp"`
+	Headers   *[]HTTPHeader `bson:"headers" json:"headers"`
+	Body      string        `bson:"body" json:"body"`
 }
 
 // HTTPResponse represents http response
 type HTTPResponse struct {
-	StatusCode int
-	Version    string
-	Headers    *[]HTTPHeader
-	Body       string
+	StatusCode int           `bson:"statuscode" json:"statuscode"`
+	Version    string        `bson:"version" json:"version"`
+	Timestamp  *time.Time    `bson:"timestamp" json:"timestamp"`
+	Headers    *[]HTTPHeader `bson:"headers" json:"headers"`
+	Body       string        `bson:"body" json:"body"`
 }
 
 // HTTPMessage represents a message including the request and response
 type HTTPMessage struct {
-	ID       string `bson:"_id" json:"_id"`
-	Request  *HTTPRequest
-	Response *HTTPResponse
+	ID       string        `bson:"_id" json:"id"`
+	Request  *HTTPRequest  `bson:"request" json:"request"`
+	Response *HTTPResponse `bson:"response" json:"response"`
 }
 
 // UnmarshalHTTPRequest deserializes bytes to HTTPRequest

@@ -4,13 +4,12 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"gopkg.in/mgo.v2/bson"
 
 	"go-fiddle/internal/config"
 	"go-fiddle/internal/kafkaclient"
-
-	"gopkg.in/mgo.v2"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/gorilla/mux"
@@ -18,16 +17,22 @@ import (
 
 func main() {
 	router := mux.NewRouter()
-	session, _ := mgo.Dial(config.Get("MONGODB", "mongodb://localhost"))
+
+	RegisterRoutes(router)
+
+	session := GetDatabaseConnection()
 	defer session.Close()
 	// session.SetMode(mgo.Monotonic, true)
+	collection := GetDatabaseCollection(session, "messages")
 
 	kafkaClient := kafkaclient.NewConsumer(func(msg *kafka.Message) {
 		message := string(msg.Value)
-		collection := session.DB("gofiddle").C("messages")
+
+		timestamp := time.Now()
 
 		if *msg.TopicPartition.Topic == "request" {
 			requestID, request := UnmarshalHTTPRequest(msg.Value)
+			request.Timestamp = &timestamp
 			httpMessage := HTTPMessage{requestID, request, nil}
 
 			err := collection.Insert(httpMessage)
@@ -37,6 +42,7 @@ func main() {
 			}
 		} else if *msg.TopicPartition.Topic == "response" {
 			requestID, response := UnmarshalHTTPResponse(msg.Value)
+			response.Timestamp = &timestamp
 
 			var httpMessage *HTTPMessage
 			err := collection.FindId(requestID).One(&httpMessage)
