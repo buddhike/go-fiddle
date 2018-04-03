@@ -37,9 +37,9 @@ func NewConsumer(messageHandler func(*kafka.Message)) *kafka.Consumer {
 
 		for run == true {
 			select {
-			case sig := <-sigchan:
-				fmt.Printf("Caught signal %v: terminating\n", sig)
+			case _ = <-sigchan:
 				run = false
+				os.Exit(1)
 
 			case ev := <-c.Events():
 				switch e := ev.(type) {
