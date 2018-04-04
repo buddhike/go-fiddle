@@ -18,7 +18,7 @@ class MessagesRow extends Component {
     const { message, active } = this.props;
     const host = message.request.headers.filter(h => /^host$/i.test(h.name))[0].value;
     const { uri, method } = message.request;
-    const { statuscode } = message.response;
+    const { statuscode } = message.response || {};
     return (
       <tr className={active ? 'active' : ''} onClick={this.handleClick}>
         <td className="col-method">{method}</td>

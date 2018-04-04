@@ -13,6 +13,11 @@ import (
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/gorilla/websocket"
+)
+
+var (
+	listeners = make(map[*websocket.Conn]func(msg *kafka.Message))
 )
 
 func main() {
@@ -55,6 +60,10 @@ func main() {
 			}
 		}
 		log.Printf("Message received %v\n%s\n", msg.TopicPartition, message)
+
+		for _, callback := range listeners {
+			callback(msg)
+		}
 	})
 
 	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With"})
