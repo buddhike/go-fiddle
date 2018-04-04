@@ -24,6 +24,10 @@ func getMessagesHandler(w http.ResponseWriter, r *http.Request) {
 	var result []HTTPMessage
 	collection.Find(bson.M{}).Limit(10).All(&result)
 
+	if result == nil {
+		result = []HTTPMessage{}
+	}
+
 	content, err := json.Marshal(result)
 
 	if err != nil {
