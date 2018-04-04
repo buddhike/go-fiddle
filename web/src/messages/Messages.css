@@ -1,3 +1,25 @@
-.MessageList th {
+.MessageList {
+  width: 100%;
+}
+
+th {
   text-align: left;
+  border-bottom: 1px solid #000;
+}
+
+.ColumnMethod {
+  width: 10%;
+}
+
+.ColumnHost {
+  width: 10%;
+}
+
+.ColumnUri {
+  width: 70%;
+}
+
+.ColumnStatus {
+  width: 10%;
+  text-align: right;
 }

@@ -27,6 +27,7 @@ type HTTPRequest struct {
 // HTTPResponse represents http response
 type HTTPResponse struct {
 	StatusCode int           `bson:"statuscode" json:"statuscode"`
+	StatusText string        `bson:"statustext" json:"statustext"`
 	Version    string        `bson:"version" json:"version"`
 	Timestamp  *time.Time    `bson:"timestamp" json:"timestamp"`
 	Headers    *[]HTTPHeader `bson:"headers" json:"headers"`
@@ -92,6 +93,7 @@ func UnmarshalHTTPResponse(data []byte) (id string, response *HTTPResponse) {
 		result := HTTPResponse{}
 		statusCode, _ := strconv.ParseInt((*match)["statuscode"], 10, 32)
 		result.StatusCode = int(statusCode)
+		result.StatusText = (*match)["status"]
 		result.Version = (*match)["version"]
 
 		headers := []HTTPHeader{}
