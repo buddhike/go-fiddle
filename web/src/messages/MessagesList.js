@@ -16,18 +16,26 @@ class MessagesList extends Component {
   }
 
   render() {
+    const { activeMessage } = this.props;
+
     return (
-      <table className="MessageList" cellspacing="0" cellpadding="0">
+      <table className="MessageList" cellSpacing="0" cellPadding="0">
         <thead>
           <tr>
-            <th className="ColumnMethod">Method</th>
-            <th className="ColumnHost">Host</th>
-            <th className="ColumnUri">Uri</th>
-            <th className="ColumnStatus">Status</th>
+            <th className="col-method">Method</th>
+            <th className="col-host">Host</th>
+            <th className="col-uri">Uri</th>
+            <th className="col-status">Status</th>
           </tr>
         </thead>
         <tbody>
-          {this.props.messages.map(m => <MessageRow key={m.id} message={m} onClick={this.handleSelect} />)}
+          {this.props.messages.map(m => (
+            <MessageRow key={m.id}
+              message={m}
+              active={m.id === (activeMessage ? activeMessage.id : null)}
+              onClick={this.handleSelect}
+            />
+          ))}
         </tbody>
       </table>
     );

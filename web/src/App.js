@@ -32,10 +32,10 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <div className="ListPanel">
-          <MessageList messages={this.state.messages} onSelect={this.handleMessageSelect} />
+        <div className="list-panel">
+          <MessageList messages={this.state.messages} activeMessage={this.state.selectedMessage} onSelect={this.handleMessageSelect} />
         </div>
-        <div className="DetailsPanel">
+        <div className="details-panel">
           <MessageDetails message={this.state.selectedMessage} />
         </div>
       </div>

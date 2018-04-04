@@ -1,0 +1,9 @@
+.App {
+  display: flex;
+
+  .list-panel, .details-panel {
+    flex-basis: 50%;
+    overflow: scroll;
+    padding: 0.5rem;
+  }
+}

@@ -3,6 +3,14 @@
 
   th, td {
     padding: 0.2rem;
+
+    &:first-child {
+      padding-left: 0.5rem;
+    }
+
+    &:last-child {
+      padding-right: 0.5rem;
+    }
   }
 
   th {
@@ -10,20 +18,44 @@
     border-bottom: 1px solid #000;
   }
 
-  .ColumnMethod {
+  .col-method {
     width: 10%;
   }
 
-  .ColumnHost {
-    width: 10%;
+  .col-host {
+    width: 25%;
   }
 
-  .ColumnUri {
-    width: 70%;
+  .col-uri {
+    width: 55%;
   }
 
-  .ColumnStatus {
+  .col-status {
     width: 10%;
     text-align: right;
+  }
+
+  tr.active {
+    background-color: #7bf;
+  }
+}
+
+.MessageDetails {
+  padding: 0.5rem;
+
+  .request-details, .response-details {
+    dt {
+      &::after {
+        content: ':';
+      }
+    }
+    pre {
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      min-height: 10rem;
+      overflow: scroll;
+      background-color: #f2f2f2;
+    }
   }
 }

@@ -15,16 +15,16 @@ class MessagesRow extends Component {
   }
 
   render() {
-    const { message } = this.props;
+    const { message, active } = this.props;
     const host = message.request.headers.filter(h => /^host$/i.test(h.name))[0].value;
     const { uri, method } = message.request;
     const { statuscode } = message.response;
     return (
-      <tr onClick={this.handleClick}>
-        <td className="ColumnMethod">{method}</td>
-        <td className="ColumnHost">{host}</td>
-        <td className="ColumnUri">{uri}</td>
-        <td className="ColumnStatus">{statuscode}</td>
+      <tr className={active ? 'active' : ''} onClick={this.handleClick}>
+        <td className="col-method">{method}</td>
+        <td className="col-host">{host}</td>
+        <td className="col-uri">{uri}</td>
+        <td className="col-status">{statuscode}</td>
       </tr>
     );
   }

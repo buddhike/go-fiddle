@@ -18,13 +18,13 @@ class MessagesDetails extends Component {
     ].join('\r\n') : '';
 
     return (
-      <div>
-        <div>
-          <div>Request:</div>
+      <div className="MessageDetails">
+        <div className="request-details">
+          <dt>Request</dt>
           <pre>{rawRequest}</pre>
         </div>
-        <div>
-          <div>Response:</div>
+        <div className="response-details">
+          <dt>Response</dt>
           <pre>{rawResponse}</pre>
         </div>
       </div>
