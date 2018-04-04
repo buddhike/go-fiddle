@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"time"
 
 	"gopkg.in/mgo.v2/bson"
 
@@ -29,11 +28,8 @@ func main() {
 	kafkaClient := kafkaclient.NewConsumer(func(msg *kafka.Message) {
 		message := string(msg.Value)
 
-		timestamp := time.Now()
-
 		if *msg.TopicPartition.Topic == "request" {
 			requestID, request := UnmarshalHTTPRequest(msg.Value)
-			request.Timestamp = &timestamp
 			httpMessage := HTTPMessage{requestID, request, nil}
 
 			err := collection.Insert(httpMessage)
@@ -43,7 +39,6 @@ func main() {
 			}
 		} else if *msg.TopicPartition.Topic == "response" {
 			requestID, response := UnmarshalHTTPResponse(msg.Value)
-			response.Timestamp = &timestamp
 
 			var httpMessage *HTTPMessage
 			err := collection.FindId(requestID).One(&httpMessage)

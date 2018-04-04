@@ -44,19 +44,26 @@ type HTTPMessage struct {
 // UnmarshalHTTPRequest deserializes bytes to HTTPRequest
 func UnmarshalHTTPRequest(data []byte) (id string, request *HTTPRequest) {
 	lines := strings.Split(string(data), "\r\n")
-	requestLines := lines[1:]
-	match := regexputil.RegexMapString("^request-id: (?P<requestid>.+)$", lines[0])
+	requestLines := lines[2:]
+	requestIDMatch := regexputil.RegexMapString("^request-id: (?P<requestid>.+)$", lines[0])
 
-	if match != nil {
-		id = (*match)["requestid"]
+	if requestIDMatch != nil {
+		id = (*requestIDMatch)["requestid"]
 	}
 
-	match = regexputil.RegexMapString("^(?P<method>[^ ]+) (?P<uri>[^ ]+) (?P<version>.+)$", requestLines[0])
+	var timestamp time.Time
+	timestampMatch := regexputil.RegexMapString("^timestamp: (?P<timestamp>.+)$", lines[1])
+	if timestampMatch != nil {
+		timestamp, _ = time.Parse(time.RFC3339, (*timestampMatch)["timestamp"])
+	}
+
+	match := regexputil.RegexMapString("^(?P<method>[^ ]+) (?P<uri>[^ ]+) (?P<version>.+)$", requestLines[0])
 	if match != nil {
 		result := HTTPRequest{}
 		result.Method = (*match)["method"]
 		result.URI = (*match)["uri"]
 		result.Version = (*match)["version"]
+		result.Timestamp = &timestamp
 
 		headers := []HTTPHeader{}
 
@@ -81,20 +88,27 @@ func UnmarshalHTTPRequest(data []byte) (id string, request *HTTPRequest) {
 // UnmarshalHTTPResponse deserializes bytes to HTTPRequest
 func UnmarshalHTTPResponse(data []byte) (id string, response *HTTPResponse) {
 	lines := strings.Split(string(data), "\r\n")
-	responseLines := lines[1:]
-	match := regexputil.RegexMapString("^request-id: (?P<requestid>.+)$", lines[0])
+	responseLines := lines[2:]
+	requestIDMatch := regexputil.RegexMapString("^request-id: (?P<requestid>.+)$", lines[0])
 
-	if match != nil {
-		id = (*match)["requestid"]
+	if requestIDMatch != nil {
+		id = (*requestIDMatch)["requestid"]
 	}
 
-	match = regexputil.RegexMapString("^(?P<version>[^ ]+) (?P<statuscode>[^ ]+) (?P<status>.+)$", responseLines[0])
+	var timestamp time.Time
+	timestampMatch := regexputil.RegexMapString("^timestamp: (?P<timestamp>.+)$", lines[1])
+	if timestampMatch != nil {
+		timestamp, _ = time.Parse(time.RFC3339, (*timestampMatch)["timestamp"])
+	}
+
+	match := regexputil.RegexMapString("^(?P<version>[^ ]+) (?P<statuscode>[^ ]+) (?P<status>.+)$", responseLines[0])
 	if match != nil {
 		result := HTTPResponse{}
 		statusCode, _ := strconv.ParseInt((*match)["statuscode"], 10, 32)
 		result.StatusCode = int(statusCode)
 		result.StatusText = (*match)["status"]
 		result.Version = (*match)["version"]
+		result.Timestamp = &timestamp
 
 		headers := []HTTPHeader{}
 

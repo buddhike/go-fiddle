@@ -44,11 +44,14 @@
   padding: 0.5rem;
 
   .request-details, .response-details {
+    padding-bottom: 1rem;
+
     dt {
       &::after {
         content: ':';
       }
     }
+
     pre {
       padding: 5px;
       border: 1px solid #ccc;
@@ -56,6 +59,12 @@
       min-height: 10rem;
       overflow: scroll;
       background-color: #f2f2f2;
+      margin: 1em 0 0 0;
+    }
+
+    .time {
+      font-size: 0.8rem;
+      text-align: right;
     }
   }
 }

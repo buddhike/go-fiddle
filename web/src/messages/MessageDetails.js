@@ -22,10 +22,12 @@ class MessagesDetails extends Component {
         <div className="request-details">
           <dt>Request</dt>
           <pre>{rawRequest}</pre>
+          <div className="time">{message && message.request ? message.request.timestamp : ''}</div>
         </div>
         <div className="response-details">
           <dt>Response</dt>
           <pre>{rawResponse}</pre>
+          <div className="time">{message && message.response ? message.response.timestamp : ''}</div>
         </div>
       </div>
     );

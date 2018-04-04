@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"regexp"
+	"time"
 
 	"go-fiddle/internal/config"
 	"go-fiddle/internal/kafkaserver"
@@ -34,11 +35,13 @@ func main() {
 			requestID, _ := uuid.NewV4()
 			requestMap[r] = requestID.String()
 
-			requestIDPrefix := []byte(fmt.Sprintf("request-id: %s\r\n", requestMap[r]))
+			prefix := []byte{}
+			prefix = append(prefix, []byte(fmt.Sprintf("request-id: %s\r\n", requestID))...)
+			prefix = append(prefix, []byte(fmt.Sprintf("timestamp: %s\r\n", time.Now().Format(time.RFC3339)))...)
 
 			kafkaProducer.Produce(&kafka.Message{
 				TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
-				Value:          append(requestIDPrefix, httpRequest...),
+				Value:          append(prefix, httpRequest...),
 			}, nil)
 
 			// get stubbed response (a nil response indicates that request should not be stubbed and response should come from actual source)
@@ -52,13 +55,16 @@ func main() {
 			topic := "response"
 
 			requestID := requestMap[r.Request]
-			requestIDPrefix := []byte(fmt.Sprintf("request-id: %s\r\n", requestID))
+
+			prefix := []byte{}
+			prefix = append(prefix, []byte(fmt.Sprintf("request-id: %s\r\n", requestID))...)
+			prefix = append(prefix, []byte(fmt.Sprintf("timestamp: %s\r\n", time.Now().Format(time.RFC3339)))...)
 
 			delete(requestMap, r.Request)
 
 			kafkaProducer.Produce(&kafka.Message{
 				TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
-				Value:          append(requestIDPrefix, httpResponse...),
+				Value:          append(prefix, httpResponse...),
 			}, nil)
 
 			return r
