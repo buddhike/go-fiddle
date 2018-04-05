@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import fetch from 'isomorphic-fetch';
-import Websocket from 'react-websocket';
+import Sockette from 'sockette';
 import MessageList from './messages/MessagesList';
 import MessageDetails from './messages/MessageDetails';
 import config from './config';
@@ -21,6 +21,14 @@ class App extends Component {
   }
 
   componentDidMount() {
+    this.websocket = new Sockette(config.websocket, {
+      timeout: 5000,
+      maxAttempts: 10,
+      onmessage: e => {
+        this.handleData(e);
+      },
+    });
+
     return this.refreshData();
   }
 
@@ -39,8 +47,8 @@ class App extends Component {
     });
   }
 
-  handleData(data) {
-    data = JSON.parse(data);
+  handleData(e) {
+    const data = JSON.parse(e.data);
     const messages = this.state.messages.slice();
     const index = messages.findIndex(m => m.id === data.id);
 
@@ -62,7 +70,6 @@ class App extends Component {
         <div className="details-panel">
           <MessageDetails message={this.state.selectedMessage} />
         </div>
-        <Websocket url={config.websocket} onMessage={this.handleData} />
       </div>
     );
   }
