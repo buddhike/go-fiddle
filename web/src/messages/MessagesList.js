@@ -23,7 +23,6 @@ class MessagesList extends Component {
         <thead>
           <tr>
             <th className="col-method">Method</th>
-            <th className="col-host">Host</th>
             <th className="col-uri">Uri</th>
             <th className="col-status">Status</th>
           </tr>

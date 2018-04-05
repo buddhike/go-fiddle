@@ -6,15 +6,7 @@
   }
 
   th, td {
-    padding: 0.2rem;
-
-    &:first-child {
-      padding-left: 0.5rem;
-    }
-
-    &:last-child {
-      padding-right: 0.5rem;
-    }
+    padding: 0.3rem 0.5rem;
   }
 
   th {
@@ -22,20 +14,11 @@
     border-bottom: 1px solid #000;
   }
 
-  .col-method {
-    width: 10%;
-  }
-
-  .col-host {
-    width: 25%;
-  }
-
   .col-uri {
-    width: 55%;
+    width: 100%;
   }
 
   .col-status {
-    width: 10%;
     text-align: right;
   }
 

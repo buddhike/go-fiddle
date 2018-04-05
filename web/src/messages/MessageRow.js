@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import './Messages.css';
 
-const hostFromUriExpression = /^(\w+):\/\/([^\/]+)/i;
 function getHeaderValue(headers, headerName) {
   const expression = new RegExp(`^${headerName}$`, "i");
   const header = headers.filter(h => expression.test(h.name))[0];
@@ -26,13 +25,17 @@ class MessagesRow extends Component {
 
   render() {
     const { message, active } = this.props;
-    const { uri, method } = message.request;
-    const host = getHeaderValue(message.request.headers, "host") || (hostFromUriExpression.exec(uri) || [])[2];
+    let { uri, method } = message.request;
+    const host = getHeaderValue(message.request.headers, "host");
     const { statuscode } = message.response || {};
+
+    if (!/^https?:\/\//i.test(uri) && host) {
+      uri = `https://${host}${uri}`;
+    }
+
     return (
       <tr className={active ? 'active' : ''} onClick={this.handleClick}>
         <td className="col-method">{method}</td>
-        <td className="col-host">{host}</td>
         <td className="col-uri">{uri}</td>
         <td className="col-status">{statuscode}</td>
       </tr>
