@@ -1,6 +1,16 @@
 import React, { Component } from 'react';
 import './Messages.css';
 
+const hostFromUriExpression = /^(\w+):\/\/([^\/]+)/i;
+function getHeaderValue(headers, headerName) {
+  const expression = new RegExp(`^${headerName}$`, "i");
+  const header = headers.filter(h => expression.test(h.name))[0];
+  if (header) {
+    return header.value;
+  }
+  return null;
+}
+
 class MessagesRow extends Component {
   constructor(props) {
     super(props);
@@ -16,8 +26,8 @@ class MessagesRow extends Component {
 
   render() {
     const { message, active } = this.props;
-    const host = message.request.headers.filter(h => /^host$/i.test(h.name))[0].value;
     const { uri, method } = message.request;
+    const host = getHeaderValue(message.request.headers, "host") || (hostFromUriExpression.exec(uri) || [])[2];
     const { statuscode } = message.response || {};
     return (
       <tr className={active ? 'active' : ''} onClick={this.handleClick}>
