@@ -30,14 +30,26 @@ class App extends Component {
     this.setState({messages});
   }
 
-  handleMessageSelect(message) {
+  async handleMessageSelect(message) {
+    const response = await fetch(`http://localhost:8888/messages/${message.id}`);
+    const messageDetails = await response.json();
     this.setState({
-      selectedMessage: message,
+      selectedMessage: messageDetails,
     });
   }
 
   handleData(data) {
-    this.refreshData();
+    data = JSON.parse(data);
+    const messages = this.state.messages.slice();
+    const index = messages.findIndex(m => m.id === data.id);
+
+    if (index === -1) {
+      messages.push(data);
+    } else {
+      messages[index] = data;
+    }
+
+    this.setState({messages});
   }
 
   render() {

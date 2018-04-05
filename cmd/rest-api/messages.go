@@ -41,6 +41,14 @@ type HTTPMessage struct {
 	Response *HTTPResponse `bson:"response" json:"response"`
 }
 
+// HTTPMessageSummary represents minimal set of message attributes
+type HTTPMessageSummary struct {
+	ID         string `bson:"_id" json:"id"`
+	Method     string `bson:"method" json:"method"`
+	URI        string `bson:"uri" json:"uri"`
+	StatusCode int    `bson:"statuscode" json:"statuscode"`
+}
+
 // UnmarshalHTTPRequest deserializes bytes to HTTPRequest
 func UnmarshalHTTPRequest(data []byte) (id string, request *HTTPRequest) {
 	lines := strings.Split(string(data), "\r\n")

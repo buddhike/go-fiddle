@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
 	"gopkg.in/mgo.v2/bson"
 
-	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 )
@@ -40,7 +40,9 @@ func getMessagesHandler(w http.ResponseWriter, r *http.Request) {
 		result = []HTTPMessage{}
 	}
 
-	content, err := json.Marshal(result)
+	summary := getMessageSummary(result)
+
+	content, err := json.Marshal(summary)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -87,11 +89,39 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	listeners[ws] = func(msg *kafka.Message) {
-		ws.WriteJSON(struct {
-			Type *string `json:"type"`
-		}{
-			msg.TopicPartition.Topic,
-		})
+	listeners[ws] = func(message *HTTPMessage) {
+		ws.WriteJSON(summariseMessage(*message))
 	}
+}
+
+func getMessageSummary(messages []HTTPMessage) []HTTPMessageSummary {
+	summary := make([]HTTPMessageSummary, len(messages))
+	for i, message := range messages {
+		summary[i] = summariseMessage(message)
+	}
+	return summary
+}
+
+func summariseMessage(message HTTPMessage) (summary HTTPMessageSummary) {
+	summary = HTTPMessageSummary{
+		message.ID,
+		message.Request.Method,
+		message.Request.URI,
+		0,
+	}
+
+	if message.Response != nil {
+		summary.StatusCode = message.Response.StatusCode
+	}
+
+	if !strings.HasPrefix(strings.ToLower(summary.URI), "http:") {
+		for _, header := range *message.Request.Headers {
+			if strings.ToLower(header.Name) == "host" {
+				summary.URI = fmt.Sprintf("https://%s%s", header.Value, summary.URI)
+				break
+			}
+		}
+	}
+
+	return
 }

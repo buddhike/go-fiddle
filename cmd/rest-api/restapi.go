@@ -17,7 +17,7 @@ import (
 )
 
 var (
-	listeners = make(map[*websocket.Conn]func(msg *kafka.Message))
+	listeners = make(map[*websocket.Conn]func(message *HTTPMessage))
 )
 
 func main() {
@@ -33,9 +33,10 @@ func main() {
 	kafkaClient := kafkaclient.NewConsumer(func(msg *kafka.Message) {
 		message := string(msg.Value)
 
+		var httpMessage *HTTPMessage
 		if *msg.TopicPartition.Topic == "request" {
 			requestID, request := UnmarshalHTTPRequest(msg.Value)
-			httpMessage := HTTPMessage{requestID, request, nil}
+			httpMessage = &HTTPMessage{requestID, request, nil}
 
 			err := collection.Insert(httpMessage)
 
@@ -45,7 +46,6 @@ func main() {
 		} else if *msg.TopicPartition.Topic == "response" {
 			requestID, response := UnmarshalHTTPResponse(msg.Value)
 
-			var httpMessage *HTTPMessage
 			err := collection.FindId(requestID).One(&httpMessage)
 
 			if err != nil {
@@ -61,8 +61,10 @@ func main() {
 		}
 		log.Printf("Message received %v\n%s\n", msg.TopicPartition, message)
 
-		for _, callback := range listeners {
-			callback(msg)
+		if httpMessage != nil {
+			for _, callback := range listeners {
+				callback(httpMessage)
+			}
 		}
 	})
 
