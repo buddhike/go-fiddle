@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import fetch from 'isomorphic-fetch';
+import Websocket from 'react-websocket';
 import MessageList from './messages/MessagesList';
 import MessageDetails from './messages/MessageDetails';
-import Websocket from 'react-websocket';
+import config from './config';
 
 import './App.css';
 
@@ -24,14 +25,14 @@ class App extends Component {
   }
 
   async refreshData() {
-    const response = await fetch('http://localhost:8888/messages');
+    const response = await fetch(`${config.restApi}messages`);
     const messages = await response.json();
 
     this.setState({messages});
   }
 
   async handleMessageSelect(message) {
-    const response = await fetch(`http://localhost:8888/messages/${message.id}`);
+    const response = await fetch(`${config.restApi}messages/${message.id}`);
     const messageDetails = await response.json();
     this.setState({
       selectedMessage: messageDetails,
@@ -61,7 +62,7 @@ class App extends Component {
         <div className="details-panel">
           <MessageDetails message={this.state.selectedMessage} />
         </div>
-        <Websocket url='ws://localhost:8888/ws' onMessage={this.handleData} />
+        <Websocket url={config.websocket} onMessage={this.handleData} />
       </div>
     );
   }
