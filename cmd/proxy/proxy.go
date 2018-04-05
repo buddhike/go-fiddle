@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/http/httputil"
@@ -50,7 +52,12 @@ func main() {
 
 	proxy.OnResponse(shouldInterceptResponse()).DoFunc(
 		func(r *http.Response, ctx *goproxy.ProxyCtx) *http.Response {
-			httpResponse, _ := httputil.DumpResponse(r, true)
+			httpResponse, _ := httputil.DumpResponse(r, false)
+			buf, _ := ioutil.ReadAll(r.Body)
+			responseStream := ioutil.NopCloser(bytes.NewBuffer(buf))
+			httpResponse = append(httpResponse, buf...)
+
+			r.Body = responseStream
 
 			topic := "response"
 
