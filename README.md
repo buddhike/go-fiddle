@@ -19,7 +19,7 @@ Cloning:
 
 ```sh
 # clone into GOPATH
-cd $(go env GOPATH)
+cd $(go env GOPATH)/src
 git clone https://github.com/socsieng/go-fiddle.git
 cd go-fiddle
 ```
