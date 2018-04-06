@@ -1,7 +1,7 @@
 package main
 
 import (
-	"go-fiddle/internal/config"
+	"go-fiddle/cmd/config"
 
 	mgo "gopkg.in/mgo.v2"
 )

@@ -2,13 +2,13 @@ version: '3'
 services:
   base:
     build:
-      context: .
+      context: cmd
       dockerfile: base.Dockerfile
     image: go-fiddle-base
 
   proxy:
     build:
-      context: .
+      context: cmd
       dockerfile: proxy.Dockerfile
     ports:
       - 8080:8080
@@ -24,7 +24,7 @@ services:
 
   api:
     build:
-      context: .
+      context: cmd
       dockerfile: api.Dockerfile
     ports:
       - 8888:8000

@@ -6,7 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"go-fiddle/internal/config"
+	"go-fiddle/cmd/config"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 )

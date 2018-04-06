@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"go-fiddle/internal/regexputil"
+	"go-fiddle/cmd/internal/regexputil"
 )
 
 // HTTPHeader represents a http header

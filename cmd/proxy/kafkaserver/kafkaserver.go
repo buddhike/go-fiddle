@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"go-fiddle/internal/config"
+	"go-fiddle/cmd/config"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 )

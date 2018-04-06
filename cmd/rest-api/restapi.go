@@ -7,8 +7,8 @@ import (
 
 	"gopkg.in/mgo.v2/bson"
 
-	"go-fiddle/internal/config"
-	"go-fiddle/internal/kafkaclient"
+	"go-fiddle/cmd/config"
+	"go-fiddle/cmd/rest-api/kafkaclient"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/gorilla/handlers"

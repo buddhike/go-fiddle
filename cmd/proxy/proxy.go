@@ -10,8 +10,8 @@ import (
 	"regexp"
 	"time"
 
-	"go-fiddle/internal/config"
-	"go-fiddle/internal/kafkaserver"
+	"go-fiddle/cmd/config"
+	"go-fiddle/cmd/proxy/kafkaserver"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/elazarl/goproxy"
