@@ -23,8 +23,8 @@ export async function createServer() {
     });
   };
 
-  consumer.subscribe('requestsummary', 0, messageHandler);
-  consumer.subscribe('responsesummary', 0, messageHandler);
+  consumer.subscribe('request', 0, messageHandler);
+  consumer.subscribe('response', 0, messageHandler);
 
   server.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');

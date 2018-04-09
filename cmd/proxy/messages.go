@@ -51,20 +51,8 @@ type HTTPMessageSummary struct {
 }
 
 // unmarshalHTTPRequest deserializes bytes to HTTPRequest
-func unmarshalHTTPRequest(data []byte) (id string, request *HTTPRequest) {
-	lines := strings.Split(string(data), "\r\n")
-	requestLines := lines[2:]
-	requestIDMatch := regexputil.RegexMapString("^request-id: (?P<requestid>.+)$", lines[0])
-
-	if requestIDMatch != nil {
-		id = (*requestIDMatch)["requestid"]
-	}
-
-	var timestamp time.Time
-	timestampMatch := regexputil.RegexMapString("^timestamp: (?P<timestamp>.+)$", lines[1])
-	if timestampMatch != nil {
-		timestamp, _ = time.Parse(time.RFC3339, (*timestampMatch)["timestamp"])
-	}
+func unmarshalHTTPRequest(data []byte) (request *HTTPRequest) {
+	requestLines := strings.Split(string(data), "\r\n")
 
 	match := regexputil.RegexMapString("^(?P<method>[^ ]+) (?P<uri>[^ ]+) (?P<version>.+)$", requestLines[0])
 	if match != nil {
@@ -72,7 +60,6 @@ func unmarshalHTTPRequest(data []byte) (id string, request *HTTPRequest) {
 		result.Method = (*match)["method"]
 		result.URI = (*match)["uri"]
 		result.Version = (*match)["version"]
-		result.Timestamp = &timestamp
 
 		headers := []HTTPHeader{}
 
@@ -94,20 +81,8 @@ func unmarshalHTTPRequest(data []byte) (id string, request *HTTPRequest) {
 	return
 }
 
-func unmarshalHTTPResponse(data []byte) (id string, response *HTTPResponse) {
-	lines := strings.Split(string(data), "\r\n")
-	responseLines := lines[2:]
-	requestIDMatch := regexputil.RegexMapString("^request-id: (?P<requestid>.+)$", lines[0])
-
-	if requestIDMatch != nil {
-		id = (*requestIDMatch)["requestid"]
-	}
-
-	var timestamp time.Time
-	timestampMatch := regexputil.RegexMapString("^timestamp: (?P<timestamp>.+)$", lines[1])
-	if timestampMatch != nil {
-		timestamp, _ = time.Parse(time.RFC3339, (*timestampMatch)["timestamp"])
-	}
+func unmarshalHTTPResponse(data []byte) (response *HTTPResponse) {
+	responseLines := strings.Split(string(data), "\r\n")
 
 	match := regexputil.RegexMapString("^(?P<version>[^ ]+) (?P<statuscode>[^ ]+) (?P<status>.+)$", responseLines[0])
 	if match != nil {
@@ -116,7 +91,6 @@ func unmarshalHTTPResponse(data []byte) (id string, response *HTTPResponse) {
 		result.StatusCode = int(statusCode)
 		result.StatusText = (*match)["status"]
 		result.Version = (*match)["version"]
-		result.Timestamp = &timestamp
 
 		headers := []HTTPHeader{}
 

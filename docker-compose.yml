@@ -1,44 +1,18 @@
 version: '3'
 services:
-  base:
-    build:
-      context: cmd
-      dockerfile: base.Dockerfile
-    image: go-fiddle-base
-
   proxy:
     build:
       context: cmd
-      dockerfile: proxy.Dockerfile
+      dockerfile: Dockerfile
     ports:
       - 8080:8080
     depends_on:
-      - base
       - kafka
     links:
       - kafka
-    environment:
-      KAFKA_SERVERS: kafka
-    networks:
-      - host
-
-  api:
-    build:
-      context: cmd
-      dockerfile: api.Dockerfile
-    ports:
-      - 8888:8000
-    depends_on:
-      - base
-      - kafka
-      - mongodb
-    links:
-      - kafka
-      - mongodb
     environment:
       KAFKA_SERVERS: kafka
       MONGODB: mongodb://mongodb
-      PORT: "8000"
     networks:
       - host
 
@@ -57,7 +31,7 @@ services:
   kafka:
     build:
       context: kafka
-      dockerfile: kafka.Dockerfile
+      dockerfile: Dockerfile
     hostname: gofiddle_kafka
     links:
       - zookeeper
@@ -71,6 +45,8 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_CREATE_TOPICS: "request:1:1,response:1:1"
+      KAFKA_CREATE_TOPICS_PORT: "9092"
     extra_hosts:
       - "moby:127.0.0.1"
     networks:

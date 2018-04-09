@@ -1,10 +1,4 @@
 #!/bin/bash
-LOGS=/var/log/kafkalogs
-touch $LOGS
-
-/etc/confluent/docker/run >> $LOGS &
-
-sleep 2
+/etc/confluent/docker/run &
 ./scripts/create-topics.sh
-
-tail -f $LOGS
+wait

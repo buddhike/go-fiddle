@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -11,17 +12,24 @@ import (
 	"time"
 
 	"go-fiddle/cmd/config"
+	"go-fiddle/cmd/internal/database"
 	"go-fiddle/cmd/internal/kafkaserver"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/elazarl/goproxy"
 	"github.com/satori/go.uuid"
+	"gopkg.in/mgo.v2/bson"
 )
 
 func main() {
 	proxy := goproxy.NewProxyHttpServer()
 	kafkaProducer := kafkaserver.NewProducer()
 	requestMap := make(map[*http.Request]string)
+
+	session := database.GetDatabaseConnection()
+	defer session.Close()
+	// session.SetMode(mgo.Monotonic, true)
+	collection := database.GetDatabaseCollection(session, "messages")
 
 	proxy.OnRequest(goproxy.ReqHostMatches(regexp.MustCompile("^.*$"))).
 		HandleConnect(goproxy.AlwaysMitm)
@@ -32,19 +40,36 @@ func main() {
 			url := r.URL.String()
 			log.Print(url)
 
-			httpRequest, _ := httputil.DumpRequest(r, true)
-
+			httpMessage := HTTPMessage{}
+			request, _ := httputil.DumpRequest(r, true)
 			requestID, _ := uuid.NewV4()
 			requestMap[r] = requestID.String()
+			timestamp := time.Now()
+
+			httpRequest := unmarshalHTTPRequest(request)
+			httpRequest.Timestamp = &timestamp
+
+			httpMessage.ID = requestID.String()
+			httpMessage.Request = httpRequest
 
 			prefix := []byte{}
 			prefix = append(prefix, []byte(fmt.Sprintf("request-id: %s\r\n", requestID))...)
 			prefix = append(prefix, []byte(fmt.Sprintf("timestamp: %s\r\n", time.Now().Format(time.RFC3339)))...)
 
-			kafkaProducer.Produce(&kafka.Message{
-				TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
-				Value:          append(prefix, httpRequest...),
-			}, nil)
+			go func() {
+				err := collection.Insert(httpMessage)
+
+				if err != nil {
+					log.Fatal(err)
+				}
+			}()
+
+			if jsonMessage, err := json.Marshal(summariseMessage(httpMessage)); err == nil {
+				kafkaProducer.Produce(&kafka.Message{
+					TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
+					Value:          jsonMessage,
+				}, nil)
+			}
 
 			// get stubbed response (a nil response indicates that request should not be stubbed and response should come from actual source)
 			return r, stubResponse(r)
@@ -56,23 +81,40 @@ func main() {
 			buf, _ := ioutil.ReadAll(r.Body)
 			responseStream := ioutil.NopCloser(bytes.NewBuffer(buf))
 			httpResponse = append(httpResponse, buf...)
+			httpMessage := HTTPMessage{}
 
 			r.Body = responseStream
 
+			timestamp := time.Now()
 			topic := "response"
 
 			requestID := requestMap[r.Request]
+			err := collection.FindId(requestID).One(&httpMessage)
 
-			prefix := []byte{}
-			prefix = append(prefix, []byte(fmt.Sprintf("request-id: %s\r\n", requestID))...)
-			prefix = append(prefix, []byte(fmt.Sprintf("timestamp: %s\r\n", time.Now().Format(time.RFC3339)))...)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			response := unmarshalHTTPResponse(httpResponse)
+			response.Timestamp = &timestamp
+			httpMessage.Response = response
 
 			delete(requestMap, r.Request)
 
-			kafkaProducer.Produce(&kafka.Message{
-				TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
-				Value:          append(prefix, httpResponse...),
-			}, nil)
+			go func() {
+				err := collection.Update(bson.M{"_id": requestID}, httpMessage)
+
+				if err != nil {
+					log.Fatal(err)
+				}
+			}()
+
+			if jsonMessage, err := json.Marshal(summariseMessage(httpMessage)); err == nil {
+				kafkaProducer.Produce(&kafka.Message{
+					TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
+					Value:          jsonMessage,
+				}, nil)
+			}
 
 			return r
 		})
