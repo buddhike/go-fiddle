@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -8,7 +9,8 @@ import (
 	"gopkg.in/mgo.v2/bson"
 
 	"go-fiddle/cmd/config"
-	"go-fiddle/cmd/rest-api/kafkaclient"
+	"go-fiddle/cmd/internal/kafkaclient"
+	"go-fiddle/cmd/internal/kafkaserver"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/gorilla/handlers"
@@ -23,19 +25,19 @@ var (
 func main() {
 	router := mux.NewRouter()
 
-	RegisterRoutes(router)
-
 	session := GetDatabaseConnection()
 	defer session.Close()
 	// session.SetMode(mgo.Monotonic, true)
 	collection := GetDatabaseCollection(session, "messages")
+
+	kafkaProducer := kafkaserver.NewProducer()
 
 	kafkaClient := kafkaclient.NewConsumer(func(msg *kafka.Message) {
 		message := string(msg.Value)
 
 		var httpMessage *HTTPMessage
 		if *msg.TopicPartition.Topic == "request" {
-			requestID, request := UnmarshalHTTPRequest(msg.Value)
+			requestID, request := unmarshalHTTPRequest(msg.Value)
 			httpMessage = &HTTPMessage{requestID, request, nil}
 
 			err := collection.Insert(httpMessage)
@@ -44,7 +46,7 @@ func main() {
 				log.Fatal(err)
 			}
 		} else if *msg.TopicPartition.Topic == "response" {
-			requestID, response := UnmarshalHTTPResponse(msg.Value)
+			requestID, response := unmarshalHTTPResponse(msg.Value)
 
 			err := collection.FindId(requestID).One(&httpMessage)
 
@@ -64,6 +66,14 @@ func main() {
 		if httpMessage != nil {
 			for _, callback := range listeners {
 				callback(httpMessage)
+			}
+
+			topic := fmt.Sprintf("%ssummary", *msg.TopicPartition.Topic)
+			if jsonMessage, err := json.Marshal(summariseMessage(*httpMessage)); err == nil {
+				kafkaProducer.Produce(&kafka.Message{
+					TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
+					Value:          jsonMessage,
+				}, nil)
 			}
 		}
 	})

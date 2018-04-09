@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -49,8 +50,8 @@ type HTTPMessageSummary struct {
 	StatusCode int    `bson:"statuscode" json:"statuscode"`
 }
 
-// UnmarshalHTTPRequest deserializes bytes to HTTPRequest
-func UnmarshalHTTPRequest(data []byte) (id string, request *HTTPRequest) {
+// unmarshalHTTPRequest deserializes bytes to HTTPRequest
+func unmarshalHTTPRequest(data []byte) (id string, request *HTTPRequest) {
 	lines := strings.Split(string(data), "\r\n")
 	requestLines := lines[2:]
 	requestIDMatch := regexputil.RegexMapString("^request-id: (?P<requestid>.+)$", lines[0])
@@ -93,8 +94,7 @@ func UnmarshalHTTPRequest(data []byte) (id string, request *HTTPRequest) {
 	return
 }
 
-// UnmarshalHTTPResponse deserializes bytes to HTTPRequest
-func UnmarshalHTTPResponse(data []byte) (id string, response *HTTPResponse) {
+func unmarshalHTTPResponse(data []byte) (id string, response *HTTPResponse) {
 	lines := strings.Split(string(data), "\r\n")
 	responseLines := lines[2:]
 	requestIDMatch := regexputil.RegexMapString("^request-id: (?P<requestid>.+)$", lines[0])
@@ -133,6 +133,38 @@ func UnmarshalHTTPResponse(data []byte) (id string, response *HTTPResponse) {
 
 		result.Headers = &headers
 		response = &result
+	}
+
+	return
+}
+
+func getMessageSummary(messages []HTTPMessage) []HTTPMessageSummary {
+	summary := make([]HTTPMessageSummary, len(messages))
+	for i, message := range messages {
+		summary[i] = summariseMessage(message)
+	}
+	return summary
+}
+
+func summariseMessage(message HTTPMessage) (summary HTTPMessageSummary) {
+	summary = HTTPMessageSummary{
+		message.ID,
+		message.Request.Method,
+		message.Request.URI,
+		0,
+	}
+
+	if message.Response != nil {
+		summary.StatusCode = message.Response.StatusCode
+	}
+
+	if !strings.HasPrefix(strings.ToLower(summary.URI), "http:") {
+		for _, header := range *message.Request.Headers {
+			if strings.ToLower(header.Name) == "host" {
+				summary.URI = fmt.Sprintf("https://%s%s", header.Value, summary.URI)
+				break
+			}
+		}
 	}
 
 	return

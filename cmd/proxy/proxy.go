@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"go-fiddle/cmd/config"
-	"go-fiddle/cmd/proxy/kafkaserver"
+	"go-fiddle/cmd/internal/kafkaserver"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/elazarl/goproxy"

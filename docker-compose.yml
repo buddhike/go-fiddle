@@ -55,7 +55,9 @@ services:
       - host
 
   kafka:
-    image: confluentinc/cp-kafka:latest
+    build:
+      context: kafka
+      dockerfile: kafka.Dockerfile
     hostname: gofiddle_kafka
     links:
       - zookeeper
@@ -68,6 +70,7 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:32181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
     extra_hosts:
       - "moby:127.0.0.1"
     networks:
