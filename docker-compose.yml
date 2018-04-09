@@ -16,6 +16,40 @@ services:
     networks:
       - host
 
+  api:
+    build:
+      context: api
+      dockerfile: Dockerfile
+    ports:
+      - 3001:3001
+    depends_on:
+      - kafka
+      - mongodb
+    links:
+      - kafka
+      - mongodb
+    environment:
+      KAFKA_SERVERS: kafka:9092
+      MONGODB_SEVER: mongodb://mongodb
+    networks:
+      - host
+
+  web:
+    build:
+      context: web
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    depends_on:
+      - api
+    links:
+      - api
+    environment:
+      REACT_APP_REST_API: http://localhost:3001/
+      REACT_APP_WEBSOCKET: ws://localhost:3001/ws
+    networks:
+      - host
+
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     ports:
@@ -49,6 +83,8 @@ services:
       KAFKA_CREATE_TOPICS_PORT: "9092"
     extra_hosts:
       - "moby:127.0.0.1"
+    healthcheck:
+      test: exit 1
     networks:
       host:
         aliases:
