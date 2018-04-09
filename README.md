@@ -32,6 +32,10 @@ Using `docker-compose`:
 docker-compose up
 ```
 
+## Launching
+
+In a browser, visit [http://localhost:3000/](http://localhost:3000/)
+
 Issue a request:
 
 ```sh
