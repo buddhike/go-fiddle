@@ -1,4 +1,4 @@
-FROM node:latest
+FROM node:latest AS build
 
 WORKDIR /app/web
 
@@ -8,4 +8,10 @@ RUN yarn install
 
 COPY ./ ./
 
-CMD [ "npm", "start" ]
+RUN npm run build
+
+
+FROM nginx:alpine
+COPY --from=build /app/web/build /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

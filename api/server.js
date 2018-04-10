@@ -1,5 +1,5 @@
 import restify from 'restify';
-import kafka from 'no-kafka';
+import kafka from './kafka';
 import WebSocket from 'ws'
 import config from './config';
 import { getMessagesHandler, getMessageDetailsHandler } from './controllers/messages';
@@ -9,12 +9,6 @@ export async function createServer() {
   const wss = new WebSocket.Server({ server: server.server });
   const sockets = [];
 
-  const consumer = new kafka.SimpleConsumer({
-    connectionString: config.KAFKA_SERVERS,
-    groupId: 'kafka-client',
-  });
-  await consumer.init();
-
   const messageHandler = function messageHandler(messages, topic, partition) {
     messages.forEach((m) => {
       sockets.forEach(ws => {
@@ -23,8 +17,7 @@ export async function createServer() {
     });
   };
 
-  consumer.subscribe('request', 0, messageHandler);
-  consumer.subscribe('response', 0, messageHandler);
+  const consumer = kafka.createConsumer(messageHandler);
 
   server.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');

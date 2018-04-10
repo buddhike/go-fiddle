@@ -11,4 +11,4 @@ RUN yarn install
 
 COPY ./ ./
 
-CMD [ "sh", "-c", "./wait-for.sh $KAFKA_SERVERS -t 30 -- sleep 5 && npm start" ]
+CMD [ "npm", "start" ]
