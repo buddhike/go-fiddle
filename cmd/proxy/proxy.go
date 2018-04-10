@@ -43,24 +43,20 @@ func main() {
 			httpMessage := HTTPMessage{}
 			request, _ := httputil.DumpRequest(r, true)
 			requestID, _ := uuid.NewV4()
-			requestMap[r] = requestID.String()
 			timestamp := time.Now()
 
 			httpRequest := unmarshalHTTPRequest(request)
 			httpRequest.Timestamp = &timestamp
 
-			httpMessage.ID = requestID.String()
+			httpMessage.ID = fmt.Sprintf("%x", requestID.Bytes())
+			requestMap[r] = httpMessage.ID
 			httpMessage.Request = httpRequest
-
-			prefix := []byte{}
-			prefix = append(prefix, []byte(fmt.Sprintf("request-id: %s\r\n", requestID))...)
-			prefix = append(prefix, []byte(fmt.Sprintf("timestamp: %s\r\n", time.Now().Format(time.RFC3339)))...)
 
 			go func() {
 				err := collection.Insert(httpMessage)
 
 				if err != nil {
-					log.Fatal(err)
+					log.Printf("Database write error for request: %s", err)
 				}
 			}()
 
@@ -92,7 +88,8 @@ func main() {
 			err := collection.FindId(requestID).One(&httpMessage)
 
 			if err != nil {
-				log.Fatal(err)
+				log.Printf("Response find (%s) error: %s", requestID, err)
+				return r
 			}
 
 			response := unmarshalHTTPResponse(httpResponse)
@@ -105,7 +102,7 @@ func main() {
 				err := collection.Update(bson.M{"_id": requestID}, httpMessage)
 
 				if err != nil {
-					log.Fatal(err)
+					log.Printf("Database write error for response (%s): %s", requestID, err)
 				}
 			}()
 
