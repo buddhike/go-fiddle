@@ -3,6 +3,7 @@ import fetch from 'isomorphic-fetch';
 import Sockette from 'sockette';
 import MessageList from './messages/MessagesList';
 import MessageDetails from './messages/MessageDetails';
+import StatusPanel from './StatusPanel';
 import config from './config';
 
 import './App.css';
@@ -19,6 +20,8 @@ class App extends Component {
 
     this.handleMessageSelect = this.handleMessageSelect.bind(this);
     this.handleData = this.handleData.bind(this);
+    this.handleError = this.handleError.bind(this);
+    this.handleStatusClose = this.handleStatusClose.bind(this);
   }
 
   componentDidMount() {
@@ -40,17 +43,38 @@ class App extends Component {
     this.setState({messages});
   }
 
+  handleError(err) {
+    console.error(err);
+    this.setState({
+      status: {
+        type: 'error',
+        message: 'Oops, something went wrong',
+      },
+    });
+  }
+
+  handleStatusClose(err) {
+    this.setState({
+      status: null,
+    });
+  }
+
   async handleMessageSelect(message) {
     this.setState({
       selectedMessageId: message.id,
       selectedMessage: null,
     });
-    const response = await fetch(`${config.restApi}messages/${message.id}`);
-    const messageDetails = await response.json();
 
-    this.setState({
-      selectedMessage: messageDetails,
-    });
+    try {
+      const response = await fetch(`${config.restApi}messages/${message.id}`);
+      const messageDetails = await response.json();
+
+      this.setState({
+        selectedMessage: messageDetails,
+      });
+    } catch (err) {
+      this.handleError(err);
+    }
   }
 
   handleData(e) {
@@ -76,6 +100,10 @@ class App extends Component {
         <div className="details-panel">
           <MessageDetails message={this.state.selectedMessage} />
         </div>
+        { this.state.status ?
+          <StatusPanel type={this.state.status.type} onDismiss={this.handleStatusClose}>{this.state.status.message}</StatusPanel> :
+          null
+        }
       </div>
     );
   }

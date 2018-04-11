@@ -1,0 +1,34 @@
+.StatusPanel {
+  position: fixed;
+  top: 0;
+  width: 100%;
+
+  &.error {
+    background-color: #c00;
+  }
+
+  button.close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: none;
+    margin: 0.5rem;
+    padding: 0.3rem;
+    cursor: pointer;
+    border: none;
+    z-index: 1000;
+
+    &:focus {
+      outline: none;
+    }
+
+    .path {
+      stroke: #fff;
+    }
+  }
+
+  div.content {
+    margin: 1rem;
+    color: #fff;
+  }
+}
