@@ -13,6 +13,7 @@ class App extends Component {
 
     this.state = {
       messages: [],
+      selectedMessageId: null,
       selectedMessage: null,
     };
 
@@ -40,8 +41,13 @@ class App extends Component {
   }
 
   async handleMessageSelect(message) {
+    this.setState({
+      selectedMessageId: message.id,
+      selectedMessage: null,
+    });
     const response = await fetch(`${config.restApi}messages/${message.id}`);
     const messageDetails = await response.json();
+
     this.setState({
       selectedMessage: messageDetails,
     });
@@ -65,7 +71,7 @@ class App extends Component {
     return (
       <div className="App">
         <div className="list-panel">
-          <MessageList messages={this.state.messages} activeMessage={this.state.selectedMessage} onSelect={this.handleMessageSelect} />
+          <MessageList messages={this.state.messages} activeMessageId={this.state.selectedMessageId} onSelect={this.handleMessageSelect} />
         </div>
         <div className="details-panel">
           <MessageDetails message={this.state.selectedMessage} />

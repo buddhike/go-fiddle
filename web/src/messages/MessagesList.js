@@ -16,7 +16,7 @@ class MessagesList extends Component {
   }
 
   render() {
-    const { activeMessage } = this.props;
+    const { activeMessageId } = this.props;
 
     return (
       <table className="MessageList" cellSpacing="0" cellPadding="0">
@@ -31,7 +31,7 @@ class MessagesList extends Component {
           {this.props.messages.map(m => (
             <MessageRow key={m.id}
               message={m}
-              active={m.id === (activeMessage ? activeMessage.id : null)}
+              active={m.id === activeMessageId}
               onClick={this.handleSelect}
             />
           ))}
