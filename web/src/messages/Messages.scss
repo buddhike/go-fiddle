@@ -16,6 +16,10 @@
 
   .col-uri {
     width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 400px;
   }
 
   .col-status {

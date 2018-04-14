@@ -21,7 +21,7 @@ class MessagesRow extends Component {
     return (
       <tr className={active ? 'active' : ''} onClick={this.handleClick}>
         <td className="col-method">{method}</td>
-        <td className="col-uri">{uri}</td>
+        <td className="col-uri" title={uri}>{uri}</td>
         <td className="col-status">{statuscode || '-'}</td>
       </tr>
     );
