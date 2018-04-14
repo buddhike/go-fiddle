@@ -138,8 +138,8 @@ func shouldInterceptResponse() goproxy.RespConditionFunc {
 
 func stubResponse(req *http.Request) *http.Response {
 	// TODO: load stubbing rules from configuration
-	if regexp.MustCompile("stub").MatchString(req.RequestURI) {
-		return goproxy.NewResponse(req, goproxy.ContentTypeText, http.StatusOK, "Stubbed")
-	}
+	// if regexp.MustCompile("stub").MatchString(req.RequestURI) {
+	// 	return goproxy.NewResponse(req, goproxy.ContentTypeText, http.StatusOK, "Stubbed")
+	// }
 	return nil
 }
