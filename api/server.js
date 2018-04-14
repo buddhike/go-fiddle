@@ -1,10 +1,9 @@
-import restify from 'restify';
-import kafka from './kafka';
+import CertificateRoutes from './routes/certificate';
+import MessagesRoutes from './routes/messages';
 import WebSocket from 'ws'
 import config from './config';
-import * as fs from 'fs';
-import MessagesRoutes from './routes/messages';
-import CertificateRoutes from './routes/certificate';
+import kafka from './kafka';
+import restify from 'restify';
 
 export async function createServer() {
   const server = restify.createServer({});
@@ -19,7 +18,7 @@ export async function createServer() {
     });
   };
 
-  const consumer = kafka.createConsumer(messageHandler);
+  kafka.createConsumer(messageHandler);
 
   server.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');

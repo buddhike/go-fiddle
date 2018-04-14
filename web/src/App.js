@@ -1,13 +1,13 @@
+import './App.css';
+
 import React, { Component } from 'react';
-import fetch from 'isomorphic-fetch';
-import Sockette from 'sockette';
-import MessageList from './messages/MessagesList';
-import MessageDetails from './messages/MessageDetails';
 import Header from './header/Header';
+import MessageDetails from './messages/MessageDetails';
+import MessageList from './messages/MessagesList';
+import Sockette from 'sockette';
 import StatusPanel from './StatusPanel';
 import config from './config';
-
-import './App.css';
+import fetch from 'isomorphic-fetch';
 
 class App extends Component {
   constructor(props) {

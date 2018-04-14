@@ -1,5 +1,5 @@
-import kafka from 'no-kafka';
 import config from './config';
+import kafka from 'no-kafka';
 
 async function retry(func, period, limit) {
   let count = 0;

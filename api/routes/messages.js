@@ -1,7 +1,5 @@
-import mongodb from 'mongodb';
 import config from '../config';
-
-const absoluteUriExpression = /^https?:\/\//g;
+import mongodb from 'mongodb';
 
 function getHeaderValue(headers, name, defaultValue) {
   const header = headers.filter(h => new RegExp(`^${name}$`, 'i').test(h.name))[0];

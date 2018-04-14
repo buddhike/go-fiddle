@@ -8,7 +8,7 @@ class MessagesRow extends Component {
     this.handleClick = this.handleClick.bind(this);
   }
 
-  handleClick(e) {
+  handleClick() {
     if (this.props.onClick) {
       this.props.onClick(this.props.message);
     }

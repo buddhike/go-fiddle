@@ -1,5 +1,6 @@
-import React, { Component } from 'react';
 import './StatusPanel.css';
+
+import React, { Component } from 'react';
 
 class StatusPanel extends Component {
   constructor(props) {

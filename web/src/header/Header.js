@@ -20,8 +20,6 @@ class Header extends Component {
   }
 
   render() {
-    const { activeMessageId } = this.props;
-
     return (
       <div className="Header">
         <div className="brand">GoFiddle</div>
