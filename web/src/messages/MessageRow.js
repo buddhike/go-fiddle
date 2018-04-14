@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
 import './Messages.css';
+import React, { Component } from 'react';
 
 class MessagesRow extends Component {
   constructor(props) {

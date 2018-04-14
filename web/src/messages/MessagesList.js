@@ -1,6 +1,6 @@
+import './Messages.css';
 import React, { Component } from 'react';
 import MessageRow from './MessageRow';
-import './Messages.css';
 
 class MessagesList extends Component {
   constructor(props) {
