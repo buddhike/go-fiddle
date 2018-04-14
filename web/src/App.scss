@@ -1,9 +1,12 @@
 .App {
-  display: flex;
+  .container {
+    margin-top: 2rem;
+    display: flex;
 
-  .list-panel, .details-panel {
-    flex-basis: 50%;
-    overflow: scroll;
-    padding: 0.5rem;
+    .list-panel, .details-panel {
+      flex-basis: 50%;
+      overflow: scroll;
+      padding: 0.5rem;
+    }
   }
 }

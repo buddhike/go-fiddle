@@ -1,0 +1,23 @@
+.Header {
+  width: 100%;
+  display: flex;
+  position: fixed;
+  background: #000;
+  color: #fff;
+  top: 0;
+
+  .brand {
+    flex-grow: 0;
+    margin: 0.5rem;
+  }
+
+  .tools {
+    flex-grow: 1;
+    text-align: right;
+    margin: 0.5rem;
+
+    a {
+      color: #aaa;
+    }
+  }
+}

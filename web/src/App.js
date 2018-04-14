@@ -3,6 +3,7 @@ import fetch from 'isomorphic-fetch';
 import Sockette from 'sockette';
 import MessageList from './messages/MessagesList';
 import MessageDetails from './messages/MessageDetails';
+import Header from './header/Header';
 import StatusPanel from './StatusPanel';
 import config from './config';
 
@@ -94,11 +95,14 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <div className="list-panel">
-          <MessageList messages={this.state.messages} activeMessageId={this.state.selectedMessageId} onSelect={this.handleMessageSelect} />
-        </div>
-        <div className="details-panel">
-          <MessageDetails message={this.state.selectedMessage} />
+        <Header />
+        <div className="container">
+          <div className="list-panel">
+            <MessageList messages={this.state.messages} activeMessageId={this.state.selectedMessageId} onSelect={this.handleMessageSelect} />
+          </div>
+          <div className="details-panel">
+            <MessageDetails message={this.state.selectedMessage} />
+          </div>
         </div>
         { this.state.status ?
           <StatusPanel type={this.state.status.type} onDismiss={this.handleStatusClose}>{this.state.status.message}</StatusPanel> :
