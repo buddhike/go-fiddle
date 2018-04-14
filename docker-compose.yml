@@ -10,9 +10,13 @@ services:
       - kafka
     links:
       - kafka
+    volumes:
+      - ./certificates:/certificates
     environment:
       KAFKA_SERVERS: kafka
       MONGODB: mongodb://mongodb
+      CERTIFICATE_FILE: /certificates/proxy-ca.pem
+      PRIVATE_KEY_FILE: /certificates/proxy-ca.key
     networks:
       - host
 
@@ -28,6 +32,8 @@ services:
     links:
       - kafka
       - mongodb
+    volumes:
+      - ./certificates:/certificates
     environment:
       KAFKA_SERVERS: kafka:9092
       MONGODB_SEVER: mongodb://mongodb

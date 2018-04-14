@@ -22,6 +22,7 @@ import (
 )
 
 func main() {
+	configureCA()
 	proxy := goproxy.NewProxyHttpServer()
 	kafkaProducer := kafkaserver.NewProducer()
 	requestMap := make(map[*http.Request]string)
