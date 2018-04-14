@@ -3,7 +3,8 @@ import kafka from './kafka';
 import WebSocket from 'ws'
 import config from './config';
 import * as fs from 'fs';
-import { getMessagesHandler, getMessageDetailsHandler } from './controllers/messages';
+import MessagesRoutes from './routes/messages';
+import CertificateRoutes from './routes/certificate';
 
 export async function createServer() {
   const server = restify.createServer({});
@@ -26,15 +27,8 @@ export async function createServer() {
     return next();
   });
 
-  server.get('/messages', getMessagesHandler);
-  server.get('/messages/:id', getMessageDetailsHandler);
-
-  server.get('/certificate', (req, res, next) => {
-    res.header('Content-disposition', 'inline; filename=gofiddle-ca.pem');
-    res.header('Content-type', 'application/x-pem-file');
-    fs.createReadStream(config.CERTIFICATE_FILE).pipe(res);
-    next();
-  });
+  MessagesRoutes.register(server);
+  CertificateRoutes.register(server);
 
   server.on('uncaughtException', (req, res, route, err) => {
     console.err(err);

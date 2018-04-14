@@ -29,7 +29,7 @@ const database = (async () => {
   return db;
 })();
 
-export async function getMessagesHandler(req, res, next) {
+async function getMessagesHandler(req, res, next) {
   const db = await database;
   const messages = (
     await db.collection('messages')
@@ -53,7 +53,7 @@ export async function getMessagesHandler(req, res, next) {
   next();
 }
 
-export async function getMessageDetailsHandler(req, res, next) {
+async function getMessageDetailsHandler(req, res, next) {
   const db = await database;
   const message = (await db.collection('messages')
     .find({
@@ -75,7 +75,11 @@ export async function getMessageDetailsHandler(req, res, next) {
   next();
 }
 
+export function register(server) {
+  server.get('/messages', getMessagesHandler);
+  server.get('/messages/:id', getMessageDetailsHandler);
+}
+
 export default {
-  getMessagesHandler,
-  getMessageDetailsHandler,
+  register,
 };
