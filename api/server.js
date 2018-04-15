@@ -30,7 +30,7 @@ export async function createServer() {
   CertificateRoutes.register(server);
 
   server.on('uncaughtException', (req, res, route, err) => {
-    console.err(err);
+    console.log(err);
   });
 
   wss.on('connection', (ws, req) => {

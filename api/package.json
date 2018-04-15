@@ -17,6 +17,7 @@
     "eslint": "^4.19.1"
   },
   "dependencies": {
+    "async-middleware": "^1.2.1",
     "mongodb": "^3.0.5",
     "no-kafka": "^3.2.9",
     "restify": "^7.1.0",
