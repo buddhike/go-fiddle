@@ -1,5 +1,6 @@
 import './Messages.css';
 import React, { Component } from 'react';
+import moment from 'moment';
 
 class MessagesRow extends Component {
   constructor(props) {
@@ -16,10 +17,11 @@ class MessagesRow extends Component {
 
   render() {
     const { message, active } = this.props;
-    const { uri, method, statuscode } = message;
+    const { timestamp, method, uri, statuscode } = message;
 
     return (
       <tr className={active ? 'active' : ''} onClick={this.handleClick}>
+        <td className="col-time">{moment(timestamp / 1000000).format('HH:mm:ss')}</td>
         <td className="col-method">{method}</td>
         <td className="col-uri" title={uri}>{uri}</td>
         <td className="col-status">{statuscode || '-'}</td>

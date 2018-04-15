@@ -23,6 +23,7 @@ class MessagesList extends Component {
         <table className="head" cellSpacing="0" cellPadding="0">
           <thead>
             <tr>
+              <th className="col-time">Time</th>
               <th className="col-method">Method</th>
               <th className="col-uri">Uri</th>
               <th className="col-status">Status</th>

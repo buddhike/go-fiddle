@@ -34,6 +34,7 @@ async function getMessagesHandler(req, res, next) {
       .find({})
       .project({
         '_id': 1,
+        'request.timestamp': 1,
         'request.method': 1,
         'request.uri': 1,
         'request.headers': 1,
@@ -42,6 +43,7 @@ async function getMessagesHandler(req, res, next) {
       .toArray()
     ).map(r => ({
       id: r._id,
+      timestamp: r.request.timestamp,
       method: r.request.method,
       uri: getUri(r.request.uri, r.request.headers),
       statuscode: (r.response || {}).statuscode,

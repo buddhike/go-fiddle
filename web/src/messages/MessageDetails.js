@@ -1,4 +1,7 @@
 import React, { Component } from 'react';
+import moment from 'moment';
+
+const DATE_FORMAT = 'dddd D MMMM YYYY HH:mm:ss.SSS';
 
 class MessagesDetails extends Component {
   render() {
@@ -22,12 +25,12 @@ class MessagesDetails extends Component {
         <div className="request-details">
           <dt>Request</dt>
           <pre>{rawRequest}</pre>
-          <div className="time">{message && message.request ? message.request.timestamp : ''}</div>
+          <div className="time">{message && message.request ? moment(message.request.timestamp / 1000000).format(DATE_FORMAT) : ''}</div>
         </div>
         <div className="response-details">
           <dt>Response</dt>
           <pre>{rawResponse}</pre>
-          <div className="time">{message && message.response ? message.response.timestamp : ''}</div>
+          <div className="time">{message && message.response ? moment(message.response.timestamp / 1000000).format(DATE_FORMAT) : ''}</div>
         </div>
       </div>
     );

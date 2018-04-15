@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
-	"time"
 
 	"go-fiddle/cmd/internal/regexputil"
 )
@@ -20,7 +19,7 @@ type HTTPRequest struct {
 	Method    string        `bson:"method" json:"method"`
 	URI       string        `bson:"uri" json:"uri"`
 	Version   string        `bson:"version" json:"version"`
-	Timestamp *time.Time    `bson:"timestamp" json:"timestamp"`
+	Timestamp int64         `bson:"timestamp" json:"timestamp"`
 	Headers   *[]HTTPHeader `bson:"headers" json:"headers"`
 	Body      string        `bson:"body" json:"body"`
 }
@@ -30,7 +29,7 @@ type HTTPResponse struct {
 	StatusCode int           `bson:"statuscode" json:"statuscode"`
 	StatusText string        `bson:"statustext" json:"statustext"`
 	Version    string        `bson:"version" json:"version"`
-	Timestamp  *time.Time    `bson:"timestamp" json:"timestamp"`
+	Timestamp  int64         `bson:"timestamp" json:"timestamp"`
 	Headers    *[]HTTPHeader `bson:"headers" json:"headers"`
 	Body       string        `bson:"body" json:"body"`
 }

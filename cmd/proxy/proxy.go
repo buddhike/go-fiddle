@@ -44,10 +44,10 @@ func main() {
 			httpMessage := HTTPMessage{}
 			request, _ := httputil.DumpRequest(r, true)
 			requestID, _ := uuid.NewV4()
-			timestamp := time.Now()
+			timestamp := time.Now().UnixNano()
 
 			httpRequest := unmarshalHTTPRequest(request)
-			httpRequest.Timestamp = &timestamp
+			httpRequest.Timestamp = timestamp
 
 			httpMessage.ID = fmt.Sprintf("%x", requestID.Bytes())
 			requestMap[r] = httpMessage.ID
@@ -82,7 +82,7 @@ func main() {
 
 			r.Body = responseStream
 
-			timestamp := time.Now()
+			timestamp := time.Now().UnixNano()
 			topic := "response"
 
 			requestID := requestMap[r.Request]
@@ -94,7 +94,7 @@ func main() {
 			}
 
 			response := unmarshalHTTPResponse(httpResponse)
-			response.Timestamp = &timestamp
+			response.Timestamp = timestamp
 			httpMessage.Response = response
 
 			delete(requestMap, r.Request)
