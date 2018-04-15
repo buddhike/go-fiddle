@@ -44,6 +44,7 @@ type HTTPMessage struct {
 // HTTPMessageSummary represents minimal set of message attributes
 type HTTPMessageSummary struct {
 	ID         string `bson:"_id" json:"id"`
+	Timestamp  int64  `bson:"timestamp" json:"timestamp"`
 	Method     string `bson:"method" json:"method"`
 	URI        string `bson:"uri" json:"uri"`
 	StatusCode int    `bson:"statuscode" json:"statuscode"`
@@ -122,6 +123,7 @@ func getMessageSummary(messages []HTTPMessage) []HTTPMessageSummary {
 func summariseMessage(message HTTPMessage) (summary HTTPMessageSummary) {
 	summary = HTTPMessageSummary{
 		message.ID,
+		message.Request.Timestamp,
 		message.Request.Method,
 		message.Request.URI,
 		0,
