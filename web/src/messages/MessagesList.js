@@ -16,11 +16,11 @@ class MessagesList extends Component {
   }
 
   render() {
-    const { activeMessageId, width } = this.props;
+    const { activeMessageId } = this.props;
 
     return (
-      <div className="MessageList" style={{width}}>
-        <table className="head" cellSpacing="0" cellPadding="0" style={{width}}>
+      <div className="MessageList">
+        <table className="head" cellSpacing="0" cellPadding="0">
           <thead>
             <tr>
               <th className="col-time">Time</th>
@@ -30,7 +30,7 @@ class MessagesList extends Component {
             </tr>
           </thead>
         </table>
-        <table className="body" cellSpacing="0" cellPadding="0" style={{width}}>
+        <table className="body" cellSpacing="0" cellPadding="0">
           <tbody>
             {this.props.messages.map(m => (
               <MessageRow key={m.id}

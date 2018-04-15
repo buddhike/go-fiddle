@@ -1,7 +1,11 @@
 @import '../variables';
 
 .MessageList {
+  width: 100%;
+
   table {
+    width: 50vw;
+
     &.head {
       background: #fff;
       position: fixed;
