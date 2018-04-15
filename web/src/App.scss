@@ -3,13 +3,11 @@
 .App {
   .container {
     padding-top: $headerHeight;
-    display: flex;
     max-height: 100vh;
     box-sizing: border-box;
 
     .list-panel, .details-panel {
-      width: 50vw;
-      flex-basis: 50%;
+      // width: 50vw;
       overflow: scroll;
       // padding: 0.5rem;
     }

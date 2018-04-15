@@ -1,13 +1,17 @@
 import './App.css';
+import './Resizer.css';
 
 import React, { Component } from 'react';
 import Header from './header/Header';
 import MessageDetails from './messages/MessageDetails';
 import MessageList from './messages/MessagesList';
 import Sockette from 'sockette';
+import SplitPane from 'react-split-pane';
 import StatusPanel from './StatusPanel';
 import config from './config';
 import fetch from 'isomorphic-fetch';
+
+const MIN_WIDTH = 640;
 
 class App extends Component {
   constructor(props) {
@@ -17,12 +21,14 @@ class App extends Component {
       messages: [],
       selectedMessageId: null,
       selectedMessage: null,
+      gridWidth: MIN_WIDTH,
     };
 
     this.handleMessageSelect = this.handleMessageSelect.bind(this);
     this.handleData = this.handleData.bind(this);
     this.handleError = this.handleError.bind(this);
     this.handleStatusClose = this.handleStatusClose.bind(this);
+    this.handleResize = this.handleResize.bind(this);
   }
 
   componentDidMount() {
@@ -92,17 +98,23 @@ class App extends Component {
     this.setState({messages});
   }
 
+  handleResize(size) {
+    this.setState({gridWidth: size});
+  }
+
   render() {
     return (
       <div className="App">
         <Header />
         <div className="container">
-          <div className="list-panel">
-            <MessageList messages={this.state.messages} activeMessageId={this.state.selectedMessageId} onSelect={this.handleMessageSelect} />
-          </div>
-          <div className="details-panel">
-            <MessageDetails message={this.state.selectedMessage} />
-          </div>
+          <SplitPane split="vertical" minSize={MIN_WIDTH} defaultSize={this.state.gridWidth} onChange={this.handleResize}>
+            <div className="list-panel">
+              <MessageList messages={this.state.messages} activeMessageId={this.state.selectedMessageId} onSelect={this.handleMessageSelect} width={this.state.gridWidth} />
+            </div>
+            <div className="details-panel">
+              <MessageDetails message={this.state.selectedMessage} />
+            </div>
+          </SplitPane>
         </div>
         { this.state.status ?
           <StatusPanel type={this.state.status.type} onDismiss={this.handleStatusClose}>{this.state.status.message}</StatusPanel> :
