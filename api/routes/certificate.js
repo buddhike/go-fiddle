@@ -1,4 +1,4 @@
-import * as fs from 'fs'
+import * as fs from 'fs';
 import config from '../config';
 import { wrap } from 'async-middleware';
 

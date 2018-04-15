@@ -14,6 +14,8 @@
     "sourceType": "module"
   },
   "rules": {
+    "comma-dangle": ["warn", "always-multiline"],
+    "constructor-super": "warn",
     "no-const-assign": "warn",
     "no-this-before-super": "warn",
     "no-undef": "warn",
@@ -26,8 +28,8 @@
         "ignoreRestSiblings": false
       }
     ],
-    "constructor-super": "warn",
-    "valid-typeof": "warn",
-    "sort-imports": "warn"
+    "semi": "warn",
+    "sort-imports": "warn",
+    "valid-typeof": "warn"
   }
 }

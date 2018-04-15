@@ -1,6 +1,6 @@
 import CertificateRoutes from './routes/certificate';
 import MessagesRoutes from './routes/messages';
-import WebSocket from 'ws'
+import WebSocket from 'ws';
 import config from './config';
 import kafka from './kafka';
 import restify from 'restify';

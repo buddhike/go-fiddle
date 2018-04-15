@@ -6,7 +6,7 @@ function getHeaderValue(headers, name, defaultValue) {
   if (header) {
     return header.value;
   }
-  return defaultValue
+  return defaultValue;
 }
 
 function getUri(uri, headers) {

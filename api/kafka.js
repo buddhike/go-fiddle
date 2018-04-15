@@ -34,4 +34,4 @@ export async function createConsumer(handler) {
 
 export default {
   createConsumer,
-}
+};
