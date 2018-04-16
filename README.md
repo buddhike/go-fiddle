@@ -24,6 +24,20 @@ git clone https://github.com/socsieng/go-fiddle.git
 cd go-fiddle
 ```
 
+## Setup
+
+In order to inspect https traffic, a certificate will need to be installed and configured.
+
+Generating a root certificate authority:
+
+```sh
+# generates the certificate
+scripts/bootstrap.sh
+
+# install the cerificate (on macOS)
+sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain certificates/proxy-ca.pem
+```
+
 ## Usage
 
 Using `docker-compose`:

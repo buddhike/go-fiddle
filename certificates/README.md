@@ -3,6 +3,6 @@
 ```sh
 ./generate-certificate.sh
 
-# Install certificate on macOS
+# install the cerificate (on macOS)
 sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain proxy-ca.pem
 ```
