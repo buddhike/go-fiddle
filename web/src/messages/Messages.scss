@@ -1,4 +1,5 @@
 @import '../variables';
+@import '../../node_modules/react-tabs/style/react-tabs.scss';
 
 .MessageList {
   width: 100%;
@@ -65,30 +66,61 @@
 }
 
 .MessageDetails {
-  padding: 0.5rem;
+  pre.raw {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    min-height: 10rem;
+    overflow: scroll;
+    background-color: #f2f2f2;
+    margin: 1em 0 0 0;
+  }
 
-  .request-details, .response-details {
-    padding-bottom: 1rem;
+  .properties {
+    overflow-x: scroll;
+    padding-left: 1.1rem;
+    font-size: 0.9rem;
 
-    dt {
-      &::after {
-        content: ':';
+    .property {
+      white-space: nowrap;
+      margin: 0.2rem 0;
+
+      dt {
+        display: inline;
+        font-weight: bold;
+
+        &::after {
+          content: ':';
+        }
+      }
+
+      dd {
+        display: inline;
+        margin-left: 0.5rem;
       }
     }
+  }
 
-    pre {
-      padding: 5px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      min-height: 10rem;
-      overflow: scroll;
-      background-color: #f2f2f2;
-      margin: 1em 0 0 0;
-    }
+  .react-tabs__tab-list {
+    position: fixed;
+    top: $headerHeight;
+    width: 50vw;
+    border-color: #000;
+    padding-top: 2px;
+    background-color: #fff;
+  }
 
-    .time {
-      font-size: 0.8rem;
-      text-align: right;
-    }
+  .react-tabs__tab {
+    padding: 5px 12px;
+  }
+
+  .react-tabs__tab--selected {
+    border-radius: 0;
+    border-color: #000;
+  }
+
+  .react-tabs__tab-panel {
+    margin-top: $tableHeaderHeight;
+    padding: 0.5rem 0.8em;
   }
 }

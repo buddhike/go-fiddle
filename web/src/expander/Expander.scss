@@ -1,0 +1,25 @@
+.Expander {
+  margin-top: 0.8rem;
+
+  .title {
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 0.2rem;
+
+    svg {
+      position: relative;
+      top: 0.1rem;
+      margin-right: 0.2rem;
+    }
+
+    &.expanded {
+      svg {
+        transform: rotate(90deg);
+      }
+    }
+  }
+
+  .content {
+
+  }
+}
