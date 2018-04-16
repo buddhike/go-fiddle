@@ -53,9 +53,5 @@ In a browser, visit [http://localhost:3000/](http://localhost:3000/)
 Issue a request:
 
 ```sh
-# stubbed request
-curl https://www.google.com.au/stub -x http://localhost:8080/ -k
-
-# un-stubbed request
 curl https://www.google.com.au/ -x http://localhost:8080/ -k
 ```
