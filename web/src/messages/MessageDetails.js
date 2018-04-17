@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Tab, TabList, TabPanel, Tabs } from 'react-tabs';
 import Expander from '../expander/Expander';
+import JsonView from 'react-json-view';
+import RawMessageDetails from './RawMessageDetails';
 import moment from 'moment';
 
 const DATE_FORMAT = 'dddd D MMMM YYYY HH:mm:ss.SSS';
@@ -32,37 +34,53 @@ function getUri(message) {
     return message.request.uri;
   }
 
-  const hostHeader = message.request.headers.filter(h => /^host$/i.test(h.name))[0];
-  if (hostHeader) {
-    return `https://${hostHeader.value}${message.request.uri}`;
+  const host = getHeaderValue(message.request.headers, 'host');
+  if (host) {
+    return `https://${host}${message.request.uri}`;
   }
 
   return null;
 }
 
+function getHeaderValue(headers, name) {
+  const header = headers.filter(h => h.name.toLowerCase() === name.toLowerCase())[0];
+  if (header) {
+    return header.value;
+  }
+  return null;
+}
+
 class MessagesDetails extends Component {
+  getPreviewContent() {
+    const { message } = this.props;
+
+    if (!message || !message.response) return null;
+
+    const contentType = getHeaderValue(message.response.headers, 'content-type');
+
+    if (!contentType) return null;
+
+    if (/\bjson\b/i.test(contentType)) {
+      return (
+        <div className="json-view">
+          <JsonView src={JSON.parse(message.response.body)} name={false} enableClipboard={false} displayObjectSize={false} displayDataTypes={false} />
+        </div>
+      );
+    }
+
+    return <pre className="raw">{message.response.body}</pre>;
+  }
+
   render() {
     let { message } = this.props;
     if (!message) message = {};
-
-    const rawRequest = message.request ? [
-      `${message.request.method} ${message.request.uri} ${message.request.version}`,
-      ...message.request.headers.map(h => `${h.name}: ${h.value}`),
-      '',
-      message.request.body,
-    ].join('\r\n') : '';
-    const rawResponse = message.response ? [
-      `${message.response.version} ${message.response.statuscode} ${message.response.statustext}`,
-      ...message.response.headers.map(h => `${h.name}: ${h.value}`),
-      '',
-      message.response.body,
-    ].join('\r\n') : '';
 
     return (
       <div className="MessageDetails">
         <Tabs>
           <TabList>
             <Tab>Headers</Tab>
+            <Tab>Preview</Tab>
             <Tab>Raw</Tab>
           </TabList>
 
@@ -90,12 +108,10 @@ class MessagesDetails extends Component {
             </div>
           </TabPanel>
           <TabPanel>
-            <Expander title="Request">
-              <pre className="raw">{rawRequest}</pre>
-            </Expander>
-            <Expander title="Response">
-              <pre className="raw">{rawResponse}</pre>
-            </Expander>
+            {this.getPreviewContent()}
+          </TabPanel>
+          <TabPanel>
+            <RawMessageDetails message={this.props.message} />
           </TabPanel>
         </Tabs>
       </div>
