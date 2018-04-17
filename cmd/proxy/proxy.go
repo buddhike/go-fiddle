@@ -42,12 +42,18 @@ func main() {
 			log.Print(url)
 
 			httpMessage := HTTPMessage{}
-			request, _ := httputil.DumpRequest(r, true)
+			request, _ := httputil.DumpRequest(r, false)
 			requestID, _ := uuid.NewV4()
 			timestamp := time.Now().UnixNano()
 
 			httpRequest := unmarshalHTTPRequest(request)
 			httpRequest.Timestamp = timestamp
+
+			buf, _ := ioutil.ReadAll(r.Body)
+			responseStream := ioutil.NopCloser(bytes.NewBuffer(buf))
+			r.Body = responseStream
+
+			httpRequest.Body = buf
 
 			httpMessage.ID = fmt.Sprintf("%x", requestID.Bytes())
 			requestMap[r] = httpMessage.ID
@@ -77,7 +83,6 @@ func main() {
 			httpResponse, _ := httputil.DumpResponse(r, false)
 			buf, _ := ioutil.ReadAll(r.Body)
 			responseStream := ioutil.NopCloser(bytes.NewBuffer(buf))
-			httpResponse = append(httpResponse, buf...)
 			httpMessage := HTTPMessage{}
 
 			r.Body = responseStream
@@ -96,6 +101,7 @@ func main() {
 			response := unmarshalHTTPResponse(httpResponse)
 			response.Timestamp = timestamp
 			httpMessage.Response = response
+			httpMessage.Response.Body = buf
 
 			delete(requestMap, r.Request)
 

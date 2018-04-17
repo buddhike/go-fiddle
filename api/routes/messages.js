@@ -62,8 +62,8 @@ async function getMessageDetailsHandler(req, res, next) {
     .toArray())
     .map(r => ({
       id: r._id,
-      request: r.request,
-      response: r.response,
+      request: decodeBody(r.request),
+      response: decodeBody(r.response),
     }))[0];
 
   if (!message) {
@@ -73,6 +73,13 @@ async function getMessageDetailsHandler(req, res, next) {
   }
 
   next();
+}
+
+function decodeBody(payload) {
+  if (payload) {
+    return Object.assign({}, payload, { body: payload.body.toString('utf8'), body64: payload.body.toString('base64') });
+  }
+  return payload;
 }
 
 export function register(server) {

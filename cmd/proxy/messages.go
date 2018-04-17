@@ -21,7 +21,7 @@ type HTTPRequest struct {
 	Version   string        `bson:"version" json:"version"`
 	Timestamp int64         `bson:"timestamp" json:"timestamp"`
 	Headers   *[]HTTPHeader `bson:"headers" json:"headers"`
-	Body      string        `bson:"body" json:"body"`
+	Body      []byte        `bson:"body" json:"body"`
 }
 
 // HTTPResponse represents http response
@@ -31,7 +31,7 @@ type HTTPResponse struct {
 	Version    string        `bson:"version" json:"version"`
 	Timestamp  int64         `bson:"timestamp" json:"timestamp"`
 	Headers    *[]HTTPHeader `bson:"headers" json:"headers"`
-	Body       string        `bson:"body" json:"body"`
+	Body       []byte        `bson:"body" json:"body"`
 }
 
 // HTTPMessage represents a message including the request and response
@@ -63,9 +63,9 @@ func unmarshalHTTPRequest(data []byte) (request *HTTPRequest) {
 
 		headers := []HTTPHeader{}
 
-		for i, line := range requestLines[1:] {
+		for _, line := range requestLines[1:] {
 			if line == "" {
-				result.Body = strings.Join(requestLines[i+2:], "\r\n")
+				// result.Body = strings.Join(requestLines[i+2:], "\r\n")
 				break
 			}
 			match = regexputil.RegexMapString("^(?P<name>[^:]+): (?P<value>.+)$", line)
@@ -94,9 +94,9 @@ func unmarshalHTTPResponse(data []byte) (response *HTTPResponse) {
 
 		headers := []HTTPHeader{}
 
-		for i, line := range responseLines[1:] {
+		for _, line := range responseLines[1:] {
 			if line == "" {
-				result.Body = strings.Join(responseLines[i+2:], "\r\n")
+				// result.Body = strings.Join(responseLines[i+2:], "\r\n")
 				break
 			}
 			match = regexputil.RegexMapString("^(?P<name>[^:]+): (?P<value>.+)$", line)

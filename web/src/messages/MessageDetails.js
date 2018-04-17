@@ -68,6 +68,14 @@ class MessagesDetails extends Component {
       );
     }
 
+    if (/^image\//i.test(contentType)) {
+      return (
+        <div className="image-view">
+          <img src={`data:${contentType};base64,${message.response.body64}`} alt="preview" />
+        </div>
+      );
+    }
+
     return <pre className="raw">{message.response.body}</pre>;
   }
 
