@@ -3,6 +3,7 @@ import { Tab, TabList, TabPanel, Tabs } from 'react-tabs';
 import Expander from '../expander/Expander';
 import JsonView from 'react-json-view';
 import RawMessageDetails from './RawMessageDetails';
+import SyntaxHighlighter from 'react-syntax-highlighter';
 import moment from 'moment';
 
 const DATE_FORMAT = 'dddd D MMMM YYYY HH:mm:ss.SSS';
@@ -64,6 +65,20 @@ class MessagesDetails extends Component {
       return (
         <div className="json-view">
           <JsonView src={JSON.parse(message.response.body)} name={false} enableClipboard={false} displayObjectSize={false} displayDataTypes={false} />
+        </div>
+      );
+    }
+
+    if (/^text\/(html|xml)/i.test(contentType)) {
+      return (
+        <div className="xml-view">
+          <SyntaxHighlighter language="html" customStyle={{
+            padding: '5px',
+            border: '1px solid #ccc',
+            borderRadius: '5px',
+            minHeight: '10rem',
+            backgroundColor: '#f2f2f2',
+          }}>{message.response.body}</SyntaxHighlighter>
         </div>
       );
     }

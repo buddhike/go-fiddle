@@ -114,6 +114,20 @@
     }
   }
 
+  .xml-view {
+    padding: 0.5rem;
+
+    pre.raw {
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      min-height: 10rem;
+      overflow: scroll;
+      background-color: #f2f2f2;
+      margin: 1em 0 0 0;
+    }
+  }
+
   .react-tabs__tab-list {
     position: fixed;
     top: $headerHeight;
