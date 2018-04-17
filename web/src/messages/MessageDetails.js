@@ -55,7 +55,7 @@ class MessagesDetails extends Component {
   getPreviewContent() {
     const { message } = this.props;
 
-    if (!message || !message.response) return null;
+    if (!message || !message.response || !message.response.body) return null;
 
     const contentType = getHeaderValue(message.response.headers, 'content-type');
 
