@@ -20,6 +20,7 @@ type HTTPRequest struct {
 	URI       string        `bson:"uri" json:"uri"`
 	Version   string        `bson:"version" json:"version"`
 	Timestamp int64         `bson:"timestamp" json:"timestamp"`
+	ClientIP  string        `bson:"clientip" json:"clientip"`
 	Headers   *[]HTTPHeader `bson:"headers" json:"headers"`
 	Body      []byte        `bson:"body" json:"body"`
 }

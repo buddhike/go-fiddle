@@ -55,6 +55,14 @@ func main() {
 
 			httpRequest.Body = buf
 
+			clientIP := r.RemoteAddr
+			remoteAddress := regexp.MustCompile(`^\[?([^\]]+)\]?:(\d+)$`).FindStringSubmatch(clientIP)
+			if remoteAddress != nil {
+				clientIP = remoteAddress[1]
+			}
+
+			httpRequest.ClientIP = clientIP
+
 			httpMessage.ID = fmt.Sprintf("%x", requestID.Bytes())
 			requestMap[r] = httpMessage.ID
 			httpMessage.Request = httpRequest

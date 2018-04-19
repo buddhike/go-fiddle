@@ -116,6 +116,7 @@ class MessagesDetails extends Component {
                   {createDefinition('Status Code', message.response ? `${message.response.statuscode} ${message.response.statustext}` : null)}
                   {createDefinition('Time', message.request ? moment(message.request.timestamp / 1000000).format(DATE_FORMAT) : null)}
                   {createDefinition('Duration', message.request && message.response ? `${Math.round((message.response.timestamp - message.request.timestamp) / 1000000)}ms` : null)}
+                  {createDefinition('Client IP', message.request && message.request.clientip ? message.request.clientip : null)}
                 </dl>
               </Expander>
               <Expander title="Request">
