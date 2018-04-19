@@ -26,7 +26,17 @@
     }
 
     tbody tr {
+      $selectedColor: #7bf;
       cursor: default;
+
+      &:focus {
+        outline: none;
+        background-color: lighten($color: $selectedColor, $amount: 20)
+      }
+
+      &.active {
+        background-color: $selectedColor;
+      }
     }
 
     th, td {
@@ -57,10 +67,6 @@
     .col-status {
       text-align: right;
       min-width: 3.2rem;
-    }
-
-    tr.active {
-      background-color: #7bf;
     }
   }
 }
