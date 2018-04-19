@@ -17,7 +17,7 @@
       "port": 9229
     },
     {
-      "name": "Launch",
+      "name": "Debug Golang",
       "type": "go",
       "request": "launch",
       "mode": "debug",
